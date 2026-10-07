@@ -18,6 +18,8 @@ docker compose up -d     # start PostgreSQL
 docker compose ps        # check status (should be "healthy")
 docker compose down      # stop (data is kept in the pgdata volume)
 docker compose down -v   # stop AND delete all data
+
+npm run migrate          # apply new files from migrations/ (safe to run repeatedly)
 ```
 
 ## Conventions
