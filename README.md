@@ -59,4 +59,4 @@ Works on Windows and Linux.
 
 ## License
 
-MIT
+[MIT](LICENSE)
