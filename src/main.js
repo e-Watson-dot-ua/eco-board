@@ -1,6 +1,10 @@
 import { connectWithRetry, pool } from './database.js';
 import { runMigrations } from './migrations.js';
+import { startServer } from './server.js';
 
+const port = Number(process.env.PORT) || 3000;
+
+let server;
 let shuttingDown = false;
 
 async function shutdown(reason) {
@@ -8,7 +12,8 @@ async function shutdown(reason) {
   shuttingDown = true;
 
   console.log(`Shutting down (${reason})...`);
-  // Later: stop the poller and close the HTTP server here, before the pool.
+  // Later: stop the poller here too, before the pool.
+  if (server) await new Promise((resolve) => server.close(resolve));
   await pool.end();
   console.log('Shutdown complete.');
 }
@@ -19,8 +24,5 @@ process.on('SIGTERM', () => shutdown('SIGTERM'));
 
 await connectWithRetry();
 await runMigrations();
-console.log('eco-board started.');
-
-// Nothing keeps the process running yet (no poller, no server), so stop here.
-// Remove this line when the poller or the server is added.
-await shutdown('startup finished');
+server = await startServer(port);
+console.log(`eco-board started: http://localhost:${port}`);

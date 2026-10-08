@@ -21,6 +21,7 @@ docker compose down -v   # stop AND delete all data
 
 npm start                # start the app (src/main.js); runs migrations on startup
 npm run migrate          # apply new files from migrations/ (safe to run repeatedly)
+npm run seed:fake        # replace device FAKE-DEVICE with 30 days of simulated readings
 ```
 
 ## Conventions
