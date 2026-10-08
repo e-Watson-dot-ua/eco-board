@@ -2,6 +2,14 @@
 const STALE_AFTER_MIN = 15;
 // Below this level the battery gauge shows a warning.
 const LOW_BATTERY_PERCENT = 20;
+// Net power within this margin counts as idle, so small noise doesn't flip the state.
+const IDLE_WATTS = 5;
+// Charging state badge: label and icon (an SVG path) per state.
+const FLOW_STATES = {
+  charging: { label: 'Charging', icon: 'M12 19V5M5 12l7-7 7 7' },
+  discharging: { label: 'Discharging', icon: 'M12 5v14M19 12l-7 7-7-7' },
+  idle: { label: 'Idle', icon: 'M5 12h14' },
+};
 // The page reloads its data shortly after the poller is expected to save a new
 // reading. If no reading is expected (polling off, or a poll is overdue), it
 // checks again after this fallback time.
@@ -19,6 +27,9 @@ const el = {
   batteryLow: document.getElementById('battery-low'),
   batteryGauge: document.getElementById('battery-gauge'),
   batteryFill: document.getElementById('battery-fill'),
+  flow: document.getElementById('flow'),
+  flowIcon: document.getElementById('flow-icon'),
+  flowText: document.getElementById('flow-text'),
   powerIn: document.getElementById('power-in'),
   powerOut: document.getElementById('power-out'),
   temperature: document.getElementById('temperature'),
@@ -60,11 +71,30 @@ function showBatteryGauge(level) {
   el.batteryLow.hidden = !low;
 }
 
+function showFlow(powerIn, powerOut) {
+  if (powerIn == null || powerOut == null) {
+    el.flow.hidden = true;
+    return;
+  }
+  const net = powerIn - powerOut;
+  let state = 'idle';
+  if (net > IDLE_WATTS) state = 'charging';
+  if (net < -IDLE_WATTS) state = 'discharging';
+
+  const { label, icon } = FLOW_STATES[state];
+  el.flowIcon.setAttribute('d', icon);
+  el.flowText.textContent =
+    state === 'idle' ? label : `${label} ${net > 0 ? '+' : '−'}${Math.abs(net)} W`;
+  el.flow.dataset.state = state;
+  el.flow.hidden = false;
+}
+
 async function loadLatest() {
   try {
     const body = await getJson('/api/readings/latest');
     el.battery.textContent = body.batteryLevel ?? '–';
     showBatteryGauge(body.batteryLevel);
+    showFlow(body.powerIn, body.powerOut);
     el.powerIn.textContent = body.powerIn ?? '–';
     el.powerOut.textContent = body.powerOut ?? '–';
     el.temperature.textContent = body.temperature ?? '–';
