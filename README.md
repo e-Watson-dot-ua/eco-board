@@ -4,8 +4,8 @@ A personal dashboard for EcoFlow portable power stations. It reads battery
 data from the EcoFlow Developer API every few minutes, stores it in
 PostgreSQL, and shows charts of battery level, power, and temperature over time.
 
-> **Status:** early development. The database setup works; the EcoFlow API
-> client and the dashboard are not built yet. See the
+> **Status:** early development. The dashboard works with simulated data;
+> reading a real device through the EcoFlow API is not built yet. See the
 > [project brief](docs/eco-board-brief.md) for the plan.
 
 ## Requirements
@@ -42,11 +42,25 @@ Works on Windows and Linux.
    docker compose up -d
    ```
 
-4. Create the database tables:
+4. Start the app (it creates the database tables on first start):
 
    ```sh
-   npm run migrate
+   npm start
    ```
+
+   Then open http://localhost:3000. Stop the app with Ctrl+C.
+
+## Trying it without an EcoFlow device
+
+Fill the database with 30 days of simulated readings:
+
+```sh
+npm run seed:fake
+```
+
+While `ECOFLOW_DEVICE_SN` in `.env` is empty, the dashboard shows this
+simulated device (`FAKE-DEVICE`). Running the command again replaces the old
+simulated data.
 
 ## Commands
 
@@ -55,7 +69,9 @@ Works on Windows and Linux.
 | `docker compose up -d` | Start PostgreSQL in the background |
 | `docker compose ps` | Check that the database is running (`healthy`) |
 | `docker compose down` | Stop PostgreSQL (data is kept) |
-| `npm run migrate` | Apply new database migrations |
+| `npm start` | Start the app and the dashboard at http://localhost:3000 |
+| `npm run migrate` | Apply new database migrations without starting the app |
+| `npm run seed:fake` | Replace the simulated device's data with 30 fresh days |
 
 ## License
 
