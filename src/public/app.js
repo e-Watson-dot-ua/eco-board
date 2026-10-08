@@ -71,11 +71,13 @@ function showError(reason) {
   showConnection('offline');
 }
 
-function formatAge(minutes) {
-  if (minutes < 1) return 'just now';
-  if (minutes < 60) return `${minutes} min ago`;
-  if (minutes < 24 * 60) return `${Math.round(minutes / 60)} h ago`;
-  return `${Math.round(minutes / (24 * 60))} d ago`;
+// Rounded down: "1 min ago" means at least a full minute.
+function formatAge(seconds) {
+  if (seconds < 5) return 'just now';
+  if (seconds < 60) return `${seconds} s ago`;
+  if (seconds < 60 * 60) return `${Math.floor(seconds / 60)} min ago`;
+  if (seconds < 24 * 60 * 60) return `${Math.floor(seconds / 3600)} h ago`;
+  return `${Math.floor(seconds / 86_400)} d ago`;
 }
 
 function showBatteryGauge(level) {
@@ -113,9 +115,8 @@ let lastReadingTs = null;
 
 function showStatusLine() {
   if (!lastReadingTs) return;
-  // Rounded down: "1 min ago" means at least a full minute.
-  const ageMin = Math.floor((Date.now() - lastReadingTs) / 60_000);
-  el.status.textContent = `Updated ${lastReadingTs.toLocaleString()} (${formatAge(ageMin)})`;
+  const ageSeconds = Math.max(0, Math.floor((Date.now() - lastReadingTs) / 1000));
+  el.status.textContent = `Updated ${lastReadingTs.toLocaleString()} (${formatAge(ageSeconds)})`;
 }
 
 async function loadLatest() {
@@ -338,8 +339,9 @@ document.addEventListener('visibilitychange', () => {
 });
 
 // Between refreshes, keep the age in the status line up to date
-// ("just now" -> "1 min ago" -> ...).
-setInterval(showStatusLine, 30_000);
+// ("just now" -> "12 s ago" -> "1 min ago" -> ...). Updating one text every
+// second is cheap, and the age starts counting the moment the data stops.
+setInterval(showStatusLine, 1000);
 
 await loadConfig();
 refreshAll();
