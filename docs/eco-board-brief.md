@@ -39,8 +39,16 @@ eco-board/
 │   └── public/
 │       ├── index.html           (dashboard UI)
 │       ├── styles.css
-│       ├── app.js               (status cards, Chart.js charts, auto-refresh)
-│       └── favicon.svg
+│       ├── app.js               (starts the dashboard modules)
+│       ├── favicon.svg
+│       └── js/
+│           ├── api.js           (requests to the server, with a timeout)
+│           ├── config.js        (settings from /api/config)
+│           ├── format.js        (texts for ages and intervals)
+│           ├── header.js        (connection pill, status line, charging badge, footer)
+│           ├── cards.js         (status cards, battery gauge)
+│           ├── charts.js        (range buttons, Chart.js charts)
+│           └── refresh.js       (Refresh button, automatic refresh)
 ├── scripts/
 │   ├── migrate.js               (npm run migrate)
 │   └── seed-fake.js             (npm run seed:fake)

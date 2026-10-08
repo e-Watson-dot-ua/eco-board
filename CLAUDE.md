@@ -33,6 +33,10 @@ npm run seed:fake        # replace device FAKE-DEVICE with 30 days of simulated 
   `readCurrent()`; today only `src/sources/fake-source.js` exists. The EcoFlow
   source will be a new file in `src/sources/` with the same shape.
 - `src/server.js` serves the JSON API and `src/public/` (the dashboard).
+- The dashboard is plain browser ES modules, no build step: `src/public/app.js`
+  only starts the modules in `src/public/js/`, one file per part of the page
+  (header, cards, charts, refresh) plus small helpers (api, config, format).
+  Keep each module to one topic and export only what other modules need.
 
 ## Conventions
 
