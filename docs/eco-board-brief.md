@@ -27,7 +27,7 @@ eco-board/
 ├── src/
 │   ├── ecoflow-client.js       (API client, request signing)
 │   ├── database.js              (PostgreSQL pool, queries, connect-with-retry)
-│   ├── migrate.js               (applies migrations/ on startup)
+│   ├── migrations.js            (applies migrations/ on startup)
 │   ├── poller.js                (background polling job, scheduler)
 │   ├── server.js                (Express REST API, static server)
 │   └── public/

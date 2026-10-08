@@ -1,5 +1,5 @@
 import { connectWithRetry, pool } from './database.js';
-import { runMigrations } from './migrate.js';
+import { runMigrations } from './migrations.js';
 
 let shuttingDown = false;
 

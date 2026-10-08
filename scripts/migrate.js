@@ -1,5 +1,5 @@
 import { connectWithRetry, pool } from '../src/database.js';
-import { runMigrations } from '../src/migrate.js';
+import { runMigrations } from '../src/migrations.js';
 
 try {
   await connectWithRetry();
