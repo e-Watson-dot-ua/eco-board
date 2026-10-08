@@ -1,0 +1,88 @@
+:root {
+  color-scheme: light dark;
+  --bg: #f6f7f9;
+  --card: #ffffff;
+  --text: #1d2330;
+  --muted: #667085;
+  --border: #e3e6eb;
+  --warn: #b54708;
+  /* Chart series colors (validated for color-blind safety on --card) */
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111418;
+    --card: #1b2027;
+    --text: #e6e9ee;
+    --muted: #98a2b3;
+    --border: #2a313b;
+    --warn: #f79009;
+    --series-1: #3987e5;
+    --series-2: #d95926;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+main { max-width: 960px; margin: 0 auto; padding: 24px 16px; }
+header,
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+h1 { margin: 0; font-size: 1.5rem; }
+h2 { margin: 0; font-size: 1.125rem; }
+h3 { margin: 0 0 8px; font-size: 0.875rem; font-weight: 500; color: var(--muted); }
+.meta { margin: 4px 0 0; color: var(--muted); font-size: 0.875rem; }
+.meta.stale { color: var(--warn); }
+button {
+  font: inherit;
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--text);
+  cursor: pointer;
+}
+button:disabled { opacity: 0.6; cursor: progress; }
+button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.ranges { display: flex; gap: 8px; }
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+.card {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+}
+.label { color: var(--muted); font-size: 0.875rem; }
+.value {
+  margin-top: 4px;
+  font-size: 2rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.unit { margin-left: 4px; color: var(--muted); font-size: 1rem; font-weight: 400; }
+.error { margin-top: 16px; color: var(--warn); }
+.history { margin-top: 32px; }
+.charts { display: grid; gap: 16px; margin-top: 16px; }
+/* Chart.js fills its parent, so the parent needs a fixed height. */
+.chart-box { position: relative; height: 220px; }
+
+/* Phones: keep this breakpoint in sync with NARROW_SCREEN in app.js. */
+@media (max-width: 600px) {
+  .chart-box { height: 180px; }
+  .ranges button { padding: 6px 10px; font-size: 0.875rem; }
+}
