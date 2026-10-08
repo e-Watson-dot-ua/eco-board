@@ -6,6 +6,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "start": "node --env-file=.env src/main.js",
     "migrate": "node --env-file=.env scripts/migrate.js"
   },
   "engines": {
