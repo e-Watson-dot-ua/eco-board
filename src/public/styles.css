@@ -32,7 +32,7 @@ body {
   color: var(--text);
 }
 main { max-width: 960px; margin: 0 auto; padding: 24px 16px; }
-header,
+.hero-top,
 .section-header {
   display: flex;
   align-items: center;
@@ -41,6 +41,38 @@ header,
   flex-wrap: wrap;
 }
 h1 { margin: 0; font-size: 1.5rem; }
+
+/* Header card: logo tile, wordmark, status. */
+.hero {
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card);
+}
+.brand { display: flex; align-items: center; gap: 16px; }
+.logo {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  /* A light tint of the green, mixed into the card color. */
+  background: color-mix(in srgb, var(--ok) 15%, var(--card));
+  color: var(--ok);
+}
+.logo svg {
+  width: 32px;
+  height: 32px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.logo circle { fill: currentColor; stroke: none; }
+.wordmark { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.01em; }
+.wordmark span { color: var(--ok); }
 h2 { margin: 0; font-size: 1.125rem; }
 h3 { margin: 0 0 8px; font-size: 0.875rem; font-weight: 500; color: var(--muted); }
 .meta { margin: 4px 0 0; color: var(--muted); font-size: 0.875rem; }

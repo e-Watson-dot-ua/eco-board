@@ -9,16 +9,27 @@
 </head>
 <body>
   <main>
-    <header>
-      <div>
-        <h1>eco-board</h1>
-        <p class="meta" id="status">Loading…</p>
-        <p class="flow" id="flow" hidden>
-          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path id="flow-icon" /></svg>
-          <span id="flow-text"></span>
-        </p>
+    <header class="hero">
+      <div class="hero-top">
+        <div class="brand">
+          <div class="logo" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <rect x="2.5" y="4.5" width="19" height="15" rx="3.5" />
+              <path d="M6 12h3l2-4 2 7 2-3h2" />
+              <circle cx="18" cy="12" r="1.25" />
+            </svg>
+          </div>
+          <div>
+            <h1 class="wordmark">eco-<span>board</span></h1>
+            <p class="meta" id="status">Loading…</p>
+            <p class="flow" id="flow" hidden>
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path id="flow-icon" /></svg>
+              <span id="flow-text"></span>
+            </p>
+          </div>
+        </div>
+        <button id="refresh" type="button">Refresh</button>
       </div>
-      <button id="refresh" type="button">Refresh</button>
     </header>
 
     <section class="cards">
