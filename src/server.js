@@ -14,6 +14,11 @@ export function startServer({ port, deviceSn }) {
 
   // The dashboard: src/public/index.html is served at http://localhost:PORT/
   app.use(express.static(join(import.meta.dirname, 'public')));
+  // Chart.js from node_modules, so the dashboard also works without internet.
+  app.use(
+    '/vendor/chart.js',
+    express.static(join(import.meta.dirname, '..', 'node_modules', 'chart.js', 'dist')),
+  );
 
   app.get('/api/health', (req, res) => {
     res.json({ status: 'ok' });
