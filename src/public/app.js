@@ -1,3 +1,6 @@
+import { getJson } from './js/api.js';
+import { formatAge, formatInterval } from './js/format.js';
+
 // Data counts as stale when this many polls in a row are missing.
 const STALE_AFTER_MISSED_POLLS = 3;
 // Used instead when the poll interval is unknown (e.g. polling is off).
@@ -58,31 +61,6 @@ let currentRange = '24h';
 let lastReadings = [];
 let charts = [];
 
-// A request without an answer after this time is aborted. Otherwise a hanging
-// server would stop the page from refreshing at all.
-const REQUEST_TIMEOUT_MS = 10_000;
-
-// A server error page is HTML, not JSON, so don't let parsing hide the real problem.
-async function getJson(url) {
-  let res;
-  let body;
-  try {
-    // The timeout also covers reading the body, not only the start of the answer.
-    res = await fetch(url, { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) });
-    body = await res.json().catch((err) => {
-      if (err.name === 'TimeoutError') throw err;
-      return {};
-    });
-  } catch (err) {
-    if (err.name === 'TimeoutError') {
-      throw new Error(`No answer from the server within ${REQUEST_TIMEOUT_MS / 1000} s`);
-    }
-    throw err;
-  }
-  if (!res.ok) throw new Error(body.error ?? `HTTP ${res.status}`);
-  return body;
-}
-
 // The reasons of the current refresh. A Set keeps each reason once, so when the
 // latest reading and the history fail for the same reason, it is listed once.
 // The page shows them as a tooltip on the Offline pill, not as extra text.
@@ -98,15 +76,6 @@ function showError(reason) {
   errorReasons.add(reason.replace(/\.$/, ''));
   el.connection.title = `Could not load the data: ${[...errorReasons].join('; ')}`;
   showConnection('offline');
-}
-
-// Rounded down: "1 min ago" means at least a full minute.
-function formatAge(seconds) {
-  if (seconds < 5) return 'just now';
-  if (seconds < 60) return `${seconds} s ago`;
-  if (seconds < 60 * 60) return `${Math.floor(seconds / 60)} min ago`;
-  if (seconds < 24 * 60 * 60) return `${Math.floor(seconds / 3600)} h ago`;
-  return `${Math.floor(seconds / 86_400)} d ago`;
 }
 
 function showBatteryGauge(level) {
@@ -337,14 +306,6 @@ async function loadConfig() {
   } catch {
     // Without the config, the page still works with the fallback refresh.
   }
-}
-
-// 10000 -> "10 s", 300000 -> "5 min", 3600000 -> "1 h"
-function formatInterval(ms) {
-  const seconds = Math.round(ms / 1000);
-  if (seconds < 60) return `${seconds} s`;
-  if (seconds < 3600) return `${Math.round(seconds / 60)} min`;
-  return `${Math.round(seconds / 3600)} h`;
 }
 
 // Next refresh: right after the poller should have saved its next reading,
