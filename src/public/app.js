@@ -1,4 +1,5 @@
 import { getJson } from './js/api.js';
+import { config, loadConfig } from './js/config.js';
 import { formatAge, formatInterval } from './js/format.js';
 
 // Data counts as stale when this many polls in a row are missing.
@@ -148,7 +149,7 @@ async function loadLatest() {
 }
 
 function staleAfterMs() {
-  return pollIntervalMs ? STALE_AFTER_MISSED_POLLS * pollIntervalMs : STALE_AFTER_DEFAULT_MS;
+  return config.pollIntervalMs ? STALE_AFTER_MISSED_POLLS * config.pollIntervalMs : STALE_AFTER_DEFAULT_MS;
 }
 
 function showConnection(state) {
@@ -165,11 +166,11 @@ function showConnection(state) {
 }
 
 function connectionHint(state) {
-  const every = pollIntervalMs ? ` (every ${formatInterval(pollIntervalMs)})` : '';
+  const every = config.pollIntervalMs ? ` (every ${formatInterval(config.pollIntervalMs)})` : '';
   if (state === 'online') return `New readings arrive on time${every}`;
-  return pollIntervalMs
+  return config.pollIntervalMs
     ? `No new reading for ${STALE_AFTER_MISSED_POLLS} polls in a row (one is expected ` +
-        `every ${formatInterval(pollIntervalMs)})`
+        `every ${formatInterval(config.pollIntervalMs)})`
     : `No new reading for ${STALE_AFTER_DEFAULT_MS / 60_000} minutes`;
 }
 
@@ -292,20 +293,13 @@ async function loadHistory() {
 
 // Refresh timing
 
-let pollIntervalMs = null; // from /api/config; null means polling is off
 let refreshTimer = null;
 
-async function loadConfig() {
-  try {
-    const config = await getJson('/api/config');
-    pollIntervalMs = config.pollIntervalMs;
-    el.deviceSn.textContent = config.deviceSn;
-    el.pollInfo.textContent = pollIntervalMs
-      ? `Polling every ${formatInterval(pollIntervalMs)}`
-      : 'Polling off';
-  } catch {
-    // Without the config, the page still works with the fallback refresh.
-  }
+function showFooter() {
+  el.deviceSn.textContent = config.deviceSn ?? '';
+  el.pollInfo.textContent = config.pollIntervalMs
+    ? `Polling every ${formatInterval(config.pollIntervalMs)}`
+    : 'Polling off';
 }
 
 // Next refresh: right after the poller should have saved its next reading,
@@ -313,9 +307,9 @@ async function loadConfig() {
 function scheduleNextRefresh(latestTs) {
   clearTimeout(refreshTimer);
 
-  let delay = Math.min(FALLBACK_REFRESH_MS, pollIntervalMs ?? FALLBACK_REFRESH_MS);
-  if (pollIntervalMs && latestTs) {
-    const untilNextReading = latestTs.getTime() + pollIntervalMs + AFTER_POLL_MARGIN_MS - Date.now();
+  let delay = Math.min(FALLBACK_REFRESH_MS, config.pollIntervalMs ?? FALLBACK_REFRESH_MS);
+  if (config.pollIntervalMs && latestTs) {
+    const untilNextReading = latestTs.getTime() + config.pollIntervalMs + AFTER_POLL_MARGIN_MS - Date.now();
     // Not positive: the reading is overdue (e.g. a poll failed), so keep the short delay.
     if (untilNextReading > 0) delay = untilNextReading;
   }
@@ -360,4 +354,5 @@ document.addEventListener('visibilitychange', () => {
 });
 
 await loadConfig();
+showFooter();
 refreshAll();
