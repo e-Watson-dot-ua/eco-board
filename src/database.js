@@ -39,8 +39,10 @@ export async function connectWithRetry({
       return rows[0].version;
     } catch (err) {
       if (attempt === attempts) throw err;
+      // When both IPv6 and IPv4 are refused, Node throws an AggregateError
+      // with an empty message; the code (e.g. ECONNREFUSED) is the useful part.
       console.warn(
-        `Database not ready (attempt ${attempt}/${attempts}): ${err.message}. ` +
+        `Database not ready (attempt ${attempt}/${attempts}): ${err.message || err.code}. ` +
           `Retrying in ${delayMs / 1000}s...`,
       );
       await sleep(delayMs);
