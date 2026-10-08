@@ -37,8 +37,6 @@ const el = {
   connectionText: document.getElementById('connection-text'),
   pollInfo: document.getElementById('poll-info'),
   deviceSn: document.getElementById('device-sn'),
-  sparkline: document.getElementById('sparkline'),
-  sparklineLine: document.getElementById('sparkline-line'),
   powerIn: document.getElementById('power-in'),
   powerOut: document.getElementById('power-out'),
   temperature: document.getElementById('temperature'),
@@ -117,45 +115,6 @@ async function loadLatest() {
     showError(`Could not load the latest reading: ${err.message}`);
     showConnection('offline');
     return null;
-  }
-}
-
-// Sparkline in the header: battery level of the last 24 hours as an SVG polyline.
-// The SVG's viewBox is 480 x 60; the line keeps 4 units of space at the top and bottom.
-function drawSparkline(readings) {
-  const width = 480;
-  const height = 60;
-  const padding = 4;
-  const end = Date.now();
-  const start = end - 24 * 60 * 60_000;
-
-  const points = readings
-    .filter((r) => r.batteryLevel != null)
-    .map((r) => {
-      // The oldest bucket can start slightly before the window, so clamp at 0.
-      const x = Math.max(0, ((Date.parse(r.ts) - start) / (end - start)) * width);
-      const y = padding + (1 - r.batteryLevel / 100) * (height - 2 * padding);
-      return `${x.toFixed(1)},${y.toFixed(1)}`;
-    });
-  el.sparklineLine.setAttribute('points', points.join(' '));
-
-  // Screen readers get the shape in words.
-  const levels = readings.map((r) => r.batteryLevel).filter((v) => v != null);
-  el.sparkline.setAttribute(
-    'aria-label',
-    levels.length
-      ? `Battery level, last 24 hours: from ${levels[0]} % to ${levels.at(-1)} %`
-      : 'Battery level, last 24 hours: no data',
-  );
-}
-
-async function loadSparkline() {
-  try {
-    const body = await getJson('/api/readings?range=24h');
-    drawSparkline(body.readings);
-  } catch {
-    // The history charts below report loading errors; the sparkline just stays empty.
-    drawSparkline([]);
   }
 }
 
@@ -326,7 +285,7 @@ function scheduleNextRefresh(latestTs) {
 async function refreshAll() {
   el.refresh.disabled = true;
   el.error.hidden = true;
-  const [latestTs] = await Promise.all([loadLatest(), loadHistory(), loadSparkline()]);
+  const [latestTs] = await Promise.all([loadLatest(), loadHistory()]);
   el.refresh.disabled = false;
   scheduleNextRefresh(latestTs);
 }

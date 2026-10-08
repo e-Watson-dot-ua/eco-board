@@ -100,18 +100,6 @@ h3 { margin: 0 0 8px; font-size: 0.875rem; font-weight: 500; color: var(--muted)
 .pill[data-state="discharging"] { color: var(--text); }
 .hero-actions { display: flex; align-items: center; gap: 12px; }
 
-/* Battery sparkline in the header card. */
-.sparkline { max-width: 480px; margin: 20px auto 0; }
-.sparkline svg { display: block; width: 100%; height: 60px; overflow: visible; }
-.sparkline polyline {
-  fill: none;
-  stroke: var(--ok);
-  stroke-width: 2;
-  stroke-linejoin: round;
-  /* Keeps the line 2px thick although the SVG is stretched to the full width. */
-  vector-effect: non-scaling-stroke;
-  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--ok) 60%, transparent));
-}
 .hero-footer {
   display: flex;
   justify-content: space-between;
@@ -122,12 +110,6 @@ h3 { margin: 0 0 8px; font-size: 0.875rem; font-weight: 500; color: var(--muted)
   font-size: 0.75rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-}
-.sparkline figcaption {
-  margin-top: 6px;
-  color: var(--muted);
-  font-size: 0.75rem;
-  text-align: center;
 }
 button {
   font: inherit;
