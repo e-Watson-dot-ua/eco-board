@@ -22,13 +22,22 @@
           <div>
             <h1 class="wordmark">eco-<span>board</span></h1>
             <p class="meta" id="status">Loading…</p>
-            <p class="flow" id="flow" hidden>
+            <p class="pill" id="flow" hidden>
               <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path id="flow-icon" /></svg>
               <span id="flow-text"></span>
             </p>
           </div>
         </div>
-        <button id="refresh" type="button">Refresh</button>
+        <div class="hero-actions">
+          <span class="pill" id="connection" data-state="loading">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="2" />
+              <path d="M16.2 7.8a6 6 0 0 1 0 8.4M7.8 16.2a6 6 0 0 1 0-8.4M19.1 4.9a10 10 0 0 1 0 14.2M4.9 19.1a10 10 0 0 1 0-14.2" />
+            </svg>
+            <span id="connection-text">Loading</span>
+          </span>
+          <button id="refresh" type="button">Refresh</button>
+        </div>
       </div>
     </header>
 

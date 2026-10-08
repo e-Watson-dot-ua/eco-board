@@ -76,26 +76,29 @@ h1 { margin: 0; font-size: 1.5rem; }
 h2 { margin: 0; font-size: 1.125rem; }
 h3 { margin: 0 0 8px; font-size: 0.875rem; font-weight: 500; color: var(--muted); }
 .meta { margin: 4px 0 0; color: var(--muted); font-size: 0.875rem; }
-.meta.stale { color: var(--warn); }
 
-/* Charging state badge under the title. */
-.flow {
+/* Rounded badges: the connection state and the charging state. */
+.pill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin: 8px 0 0;
   padding: 4px 10px;
   border: 1px solid var(--border);
   border-radius: 999px;
   background: var(--card);
   font-size: 0.875rem;
   font-weight: 500;
+  color: var(--muted);
 }
 /* display: inline-flex above would otherwise override the hidden attribute. */
-.flow[hidden] { display: none; }
-.flow[data-state="charging"] { color: var(--ok); }
-.flow[data-state="discharging"] { color: var(--text); }
-.flow[data-state="idle"] { color: var(--muted); }
+.pill[hidden] { display: none; }
+#flow { margin: 8px 0 0; }
+.pill[data-state="online"],
+.pill[data-state="charging"] { color: var(--ok); }
+.pill[data-state="stale"],
+.pill[data-state="offline"] { color: var(--warn); }
+.pill[data-state="discharging"] { color: var(--text); }
+.hero-actions { display: flex; align-items: center; gap: 12px; }
 button {
   font: inherit;
   padding: 8px 16px;

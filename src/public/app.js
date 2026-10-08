@@ -1,5 +1,8 @@
-// Data older than this is shown as a warning (the poller runs every 5 minutes).
-const STALE_AFTER_MIN = 15;
+// Data counts as stale when this many polls in a row are missing.
+const STALE_AFTER_MISSED_POLLS = 3;
+// Used instead when the poll interval is unknown (e.g. polling is off).
+const STALE_AFTER_DEFAULT_MS = 15 * 60_000;
+const CONNECTION_LABELS = { online: 'Online', stale: 'Stale', offline: 'Offline' };
 // Below this level the battery gauge shows a warning.
 const LOW_BATTERY_PERCENT = 20;
 // Net power within this margin counts as idle, so small noise doesn't flip the state.
@@ -30,6 +33,8 @@ const el = {
   flow: document.getElementById('flow'),
   flowIcon: document.getElementById('flow-icon'),
   flowText: document.getElementById('flow-text'),
+  connection: document.getElementById('connection'),
+  connectionText: document.getElementById('connection-text'),
   powerIn: document.getElementById('power-in'),
   powerOut: document.getElementById('power-out'),
   temperature: document.getElementById('temperature'),
@@ -103,12 +108,22 @@ async function loadLatest() {
     const ageMin = Math.round((Date.now() - ts) / 60_000);
     el.status.textContent =
       `${body.deviceSn} · updated ${ts.toLocaleString()} (${formatAge(ageMin)})`;
-    el.status.classList.toggle('stale', ageMin > STALE_AFTER_MIN);
+    showConnection(Date.now() - ts > staleAfterMs() ? 'stale' : 'online');
     return ts;
   } catch (err) {
     showError(`Could not load the latest reading: ${err.message}`);
+    showConnection('offline');
     return null;
   }
+}
+
+function staleAfterMs() {
+  return pollIntervalMs ? STALE_AFTER_MISSED_POLLS * pollIntervalMs : STALE_AFTER_DEFAULT_MS;
+}
+
+function showConnection(state) {
+  el.connection.dataset.state = state;
+  el.connectionText.textContent = CONNECTION_LABELS[state];
 }
 
 // Charts
