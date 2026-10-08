@@ -4,7 +4,7 @@
 // Remove the fake data with: DELETE FROM device_readings WHERE device_sn = 'FAKE-DEVICE';
 
 import { connectWithRetry, pool } from '../src/database.js';
-import { FAKE_DEVICE_SN as DEVICE_SN, simulateReading } from '../src/fake-device.js';
+import { FAKE_DEVICE_SN as DEVICE_SN, simulateReading } from '../src/sources/fake-device.js';
 
 const DAYS = 30;
 const INTERVAL_MIN = 5;

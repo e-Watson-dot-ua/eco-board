@@ -1,5 +1,5 @@
 import { getLatestReading } from '../database.js';
-import { FAKE_DEVICE_SN, simulateReading } from '../fake-device.js';
+import { FAKE_DEVICE_SN, simulateReading } from './fake-device.js';
 
 // After a long pause (app stopped for hours), simulate at most this many minutes,
 // so the battery level doesn't jump in a single step.

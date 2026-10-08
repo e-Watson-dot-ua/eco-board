@@ -29,8 +29,8 @@ eco-board/
 │   ├── poller.js                (reads a source at an interval, saves readings)
 │   ├── sources/
 │   │   ├── fake-source.js       (simulated device, used until the EcoFlow source exists)
+│   │   ├── fake-device.js       (battery simulation, shared with seed-fake)
 │   │   └── ecoflow-source.js    (planned: EcoFlow API, request signing)
-│   ├── fake-device.js           (battery simulation, shared with seed-fake)
 │   ├── database.js              (PostgreSQL pool, queries, connect-with-retry)
 │   ├── migrations.js            (applies migrations/ on startup)
 │   ├── server.js                (Express REST API, static server, request log)

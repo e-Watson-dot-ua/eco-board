@@ -1,10 +1,10 @@
 import { connectWithRetry, pool } from './database.js';
 import { positiveIntFromEnv } from './env.js';
-import { FAKE_DEVICE_SN } from './fake-device.js';
 import { log } from './log.js';
 import { runMigrations } from './migrations.js';
 import { startPoller } from './poller.js';
 import { startServer } from './server.js';
+import { FAKE_DEVICE_SN } from './sources/fake-device.js';
 import { createFakeSource } from './sources/fake-source.js';
 
 const port = Number(process.env.PORT) || 3000;
