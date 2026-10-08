@@ -99,6 +99,9 @@ h3 { margin: 0 0 8px; font-size: 0.875rem; font-weight: 500; color: var(--muted)
 /* display: inline-flex above would otherwise override the hidden attribute. */
 .pill[hidden] { display: none; }
 #flow { margin: 8px 0 0; }
+/* A hidden charging badge keeps its space, so the header doesn't change
+   height (and "jump") when the badge disappears offline or appears on load. */
+#flow[hidden] { display: inline-flex; visibility: hidden; }
 .pill[data-state="online"],
 .pill[data-state="charging"] { color: var(--ok); }
 .pill[data-state="stale"],
