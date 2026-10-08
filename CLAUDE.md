@@ -21,8 +21,10 @@ docker compose ps        # check status (should be "healthy")
 docker compose down      # stop (data is kept in the pgdata volume)
 docker compose down -v   # stop AND delete all data
 
-npm start                # build the dashboard, then start the app (server/main.js); runs migrations
-npm run build            # bundle client/ into public/dist/ (also runs before npm start)
+npm start                # production build of the dashboard, then start the app (server/main.js)
+npm run start:dev        # same with a development build (readable, with source map)
+npm run build            # production bundle of client/ into public/dist/: minified, no source map
+npm run build:dev        # development bundle: readable, with a source map
 npm run migrate          # apply new files from migrations/ (safe to run repeatedly)
 npm run seed:fake        # replace device FAKE-DEVICE with 30 days of simulated readings
 npm test                 # run the tests in test/ (no database needed)
@@ -41,9 +43,11 @@ npm test                 # run the tests in test/ (no database needed)
   starts the other modules, one file per part of the page (header, cards, charts,
   refresh) plus small helpers (api, config, format). Keep each module to one
   topic and export only what other modules need.
-- `scripts/build.js` bundles `client/` into `public/dist/app.js` (minified, with a
-  source map). It uses esbuild's JavaScript API on purpose: a Windows group policy
-  blocks running `esbuild.exe` from the command line. `public/dist/` is not in Git.
+- `scripts/build.js` bundles `client/` into `public/dist/app.js` (production:
+  minified, no source map; `--dev`: readable, with a source map). It cleans
+  `public/dist/` first. It uses esbuild's JavaScript API on purpose: a Windows
+  group policy blocks running `esbuild.exe` from the command line.
+  `public/dist/` is not in Git.
 - `public/` holds only what the browser loads; never put source files there.
 
 ## Conventions

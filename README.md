@@ -71,7 +71,9 @@ replaces the old simulated data.
 | `docker compose ps` | Check that the database is running (`healthy`) |
 | `docker compose down` | Stop PostgreSQL (data is kept) |
 | `npm start` | Build the dashboard, then start the app at http://localhost:3000 |
-| `npm run build` | Build the dashboard only (`client/` → `public/dist/`) |
+| `npm run start:dev` | The same with a development build (readable, with a source map) |
+| `npm run build` | Build the dashboard only (`client/` → `public/dist/`), minified |
+| `npm run build:dev` | Development build: readable, with a source map for debugging |
 | `npm run migrate` | Apply new database migrations without starting the app |
 | `npm run seed:fake` | Replace the simulated device's data with 30 fresh days |
 | `npm test` | Run the automated tests (no database needed) |

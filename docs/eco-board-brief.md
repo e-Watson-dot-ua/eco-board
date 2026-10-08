@@ -51,7 +51,7 @@ eco-board/
 │   ├── favicon.svg
 │   └── dist/                    (built by npm run build, not in Git)
 ├── scripts/
-│   ├── build.js                 (npm run build: esbuild bundle of client/)
+│   ├── build.js                 (npm run build / build:dev: esbuild bundle of client/)
 │   ├── migrate.js               (npm run migrate)
 │   └── seed-fake.js             (npm run seed:fake)
 ├── test/                        (npm test: node:test, no database needed)
