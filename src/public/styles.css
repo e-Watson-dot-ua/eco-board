@@ -67,7 +67,24 @@ button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-
   border-radius: 12px;
   background: var(--card);
 }
-.label { color: var(--muted); font-size: 0.875rem; }
+.label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+/* Line icons that take the color of the surrounding text. */
+.icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
 .value {
   margin-top: 4px;
   font-size: 2rem;
