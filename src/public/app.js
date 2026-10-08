@@ -107,6 +107,17 @@ function showFlow(powerIn, powerOut) {
   el.flow.hidden = false;
 }
 
+// The time of the newest reading on the page. The status line computes its age
+// from the current time, so it stays correct while offline and between refreshes.
+let lastReadingTs = null;
+
+function showStatusLine() {
+  if (!lastReadingTs) return;
+  // Rounded down: "1 min ago" means at least a full minute.
+  const ageMin = Math.floor((Date.now() - lastReadingTs) / 60_000);
+  el.status.textContent = `Updated ${lastReadingTs.toLocaleString()} (${formatAge(ageMin)})`;
+}
+
 async function loadLatest() {
   try {
     const body = await getJson('/api/readings/latest');
@@ -118,8 +129,8 @@ async function loadLatest() {
     el.temperature.textContent = body.temperature ?? '–';
 
     const ts = new Date(body.ts);
-    const ageMin = Math.round((Date.now() - ts) / 60_000);
-    el.status.textContent = `Updated ${ts.toLocaleString()} (${formatAge(ageMin)})`;
+    lastReadingTs = ts;
+    showStatusLine();
     showConnection(Date.now() - ts > staleAfterMs() ? 'stale' : 'online');
     return ts;
   } catch (err) {
@@ -300,6 +311,8 @@ async function refreshAll() {
   clearErrors();
   const [latestTs] = await Promise.all([loadLatest(), loadHistory()]);
   el.refresh.disabled = false;
+  // Also after a failed refresh, so the age keeps counting while offline.
+  showStatusLine();
   scheduleNextRefresh(latestTs);
 }
 
@@ -323,6 +336,10 @@ NARROW_SCREEN.addEventListener('change', renderCharts);
 document.addEventListener('visibilitychange', () => {
   if (!document.hidden) refreshAll();
 });
+
+// Between refreshes, keep the age in the status line up to date
+// ("just now" -> "1 min ago" -> ...).
+setInterval(showStatusLine, 30_000);
 
 await loadConfig();
 refreshAll();
