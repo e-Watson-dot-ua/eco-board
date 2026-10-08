@@ -48,6 +48,25 @@ export async function getLatestReading(deviceSn) {
   return rows[0] ?? null;
 }
 
+// Averages readings into time buckets, e.g. period '7 days' with bucket '1 hour'
+// returns one row per hour of the last 7 days.
+export async function getReadingHistory(deviceSn, { period, bucket }) {
+  const { rows } = await pool.query(
+    `SELECT date_bin($2::interval, ts, TIMESTAMPTZ '2000-01-01') AS ts,
+            round(avg(battery_level))::int           AS "batteryLevel",
+            round(avg(power_in))::int                AS "powerIn",
+            round(avg(power_out))::int               AS "powerOut",
+            round(avg(temperature), 1)::float8       AS temperature
+       FROM device_readings
+      WHERE device_sn = $1
+        AND ts >= now() - $3::interval
+      GROUP BY 1
+      ORDER BY 1`,
+    [deviceSn, bucket, period],
+  );
+  return rows;
+}
+
 export async function connectWithRetry({
   attempts = connectAttempts,
   delayMs = connectDelayMs,

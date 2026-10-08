@@ -1,5 +1,12 @@
 import express from 'express';
-import { getLatestReading } from './database.js';
+import { getLatestReading, getReadingHistory } from './database.js';
+
+// Each range gets a bucket size that keeps the chart at roughly 170-290 points.
+const RANGES = {
+  '24h': { period: '24 hours', bucket: '5 minutes' },
+  '7d': { period: '7 days', bucket: '1 hour' },
+  '30d': { period: '30 days', bucket: '4 hours' },
+};
 
 export function startServer({ port, deviceSn }) {
   const app = express();
@@ -15,6 +22,20 @@ export function startServer({ port, deviceSn }) {
       return;
     }
     res.json(reading);
+  });
+
+  app.get('/api/readings', async (req, res) => {
+    const range = req.query.range ?? '24h';
+    // Object.hasOwn, not RANGES[range]: a range like "toString" must not match.
+    if (!Object.hasOwn(RANGES, range)) {
+      res.status(400).json({
+        error: `Invalid range "${range}". Use one of: ${Object.keys(RANGES).join(', ')}.`,
+      });
+      return;
+    }
+
+    const readings = await getReadingHistory(deviceSn, RANGES[range]);
+    res.json({ deviceSn, range, bucket: RANGES[range].bucket, readings });
   });
 
   return new Promise((resolve, reject) => {
