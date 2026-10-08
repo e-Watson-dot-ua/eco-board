@@ -190,6 +190,9 @@ function showConnection(state) {
   el.connectionText.textContent = CONNECTION_LABELS[shown];
   // Offline keeps its tooltip from showError(): the reason of the failure.
   if (shown !== 'offline') el.connection.title = connectionHint(shown);
+  // The charging badge describes the battery right now, which is only known
+  // while the data is fresh. showFlow() shows it again after the next good reading.
+  if (shown !== 'online') el.flow.hidden = true;
 }
 
 function connectionHint(state) {
