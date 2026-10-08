@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "prestart": "npm run build",
-    "start": "node --env-file=.env src/main.js",
+    "start": "node --env-file=.env server/main.js",
     "build": "node scripts/build.js",
     "migrate": "node --env-file=.env scripts/migrate.js",
     "seed:fake": "node --env-file=.env scripts/seed-fake.js",

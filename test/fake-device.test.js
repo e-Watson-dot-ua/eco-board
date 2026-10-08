@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { simulateReading } from '../src/sources/fake-device.js';
+import { simulateReading } from '../server/sources/fake-device.js';
 
 // Local times on one day, so the tests don't depend on when they run.
 const at = (hour) => new Date(2026, 0, 15, hour, 0);

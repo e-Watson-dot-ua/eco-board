@@ -24,7 +24,7 @@ A personal EcoFlow battery monitoring dashboard that reads real-time device data
 ### Project Structure
 ```
 eco-board/
-├── src/
+├── server/
 │   ├── main.js                  (entry point: startup order, graceful shutdown)
 │   ├── poller.js                (reads a source at an interval, saves readings)
 │   ├── sources/

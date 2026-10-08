@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { afterEach, describe, it } from 'node:test';
-import { positiveIntFromEnv } from '../src/env.js';
+import { positiveIntFromEnv } from '../server/env.js';
 
 const NAME = 'ECO_BOARD_TEST_VALUE';
 

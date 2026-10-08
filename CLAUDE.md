@@ -7,7 +7,7 @@ Full plan: [docs/eco-board-brief.md](docs/eco-board-brief.md).
 ## Stack
 
 - Node.js 22+ (developed on 24 LTS), **plain JavaScript, ES modules** — no TypeScript
-- Server: no build step, runs the files in `src/` directly
+- Server: no build step, runs the files in `server/` directly
 - Express.js for the API and static files
 - PostgreSQL 18 in Docker (`docker-compose.yml`), driver: `pg`
 - Frontend: single HTML page; modules in `client/` bundled by esbuild into
@@ -21,7 +21,7 @@ docker compose ps        # check status (should be "healthy")
 docker compose down      # stop (data is kept in the pgdata volume)
 docker compose down -v   # stop AND delete all data
 
-npm start                # build the dashboard, then start the app (src/main.js); runs migrations
+npm start                # build the dashboard, then start the app (server/main.js); runs migrations
 npm run build            # bundle client/ into public/dist/ (also runs before npm start)
 npm run migrate          # apply new files from migrations/ (safe to run repeatedly)
 npm run seed:fake        # replace device FAKE-DEVICE with 30 days of simulated readings
@@ -30,13 +30,13 @@ npm test                 # run the tests in test/ (no database needed)
 
 ## How it fits together
 
-- `src/main.js` starts everything in order (database, migrations, server, poller)
+- `server/main.js` starts everything in order (database, migrations, server, poller)
   and stops it in reverse order on SIGINT/SIGTERM.
-- `src/poller.js` calls `source.readCurrent()` every `POLL_INTERVAL_MS` and saves
+- `server/poller.js` calls `source.readCurrent()` every `POLL_INTERVAL_MS` and saves
   the result with `insertReading()`. A source is any object with `deviceSn` and
-  `readCurrent()`; today only `src/sources/fake-source.js` exists. The EcoFlow
-  source will be a new file in `src/sources/` with the same shape.
-- `src/server.js` serves the JSON API and `public/` (the dashboard).
+  `readCurrent()`; today only `server/sources/fake-source.js` exists. The EcoFlow
+  source will be a new file in `server/sources/` with the same shape.
+- `server/server.js` serves the JSON API and `public/` (the dashboard).
 - The dashboard source is browser ES modules in `client/`: `client/app.js` only
   starts the other modules, one file per part of the page (header, cards, charts,
   refresh) plus small helpers (api, config, format). Keep each module to one

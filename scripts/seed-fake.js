@@ -3,8 +3,8 @@
 // Safe to run repeatedly: old FAKE-DEVICE rows are replaced.
 // Remove the fake data with: DELETE FROM device_readings WHERE device_sn = 'FAKE-DEVICE';
 
-import { connectWithRetry, pool } from '../src/database.js';
-import { FAKE_DEVICE_SN as DEVICE_SN, simulateReading } from '../src/sources/fake-device.js';
+import { connectWithRetry, pool } from '../server/database.js';
+import { FAKE_DEVICE_SN as DEVICE_SN, simulateReading } from '../server/sources/fake-device.js';
 
 const DAYS = 30;
 const INTERVAL_MIN = 5;

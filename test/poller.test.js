@@ -5,7 +5,7 @@ import { setTimeout as sleep } from 'node:timers/promises';
 // poller.js imports database.js, which needs a DATABASE_URL. The tests never
 // connect: they pass their own save() function to the poller.
 process.env.DATABASE_URL ??= 'postgres://test@localhost:1/not-used';
-const { startPoller } = await import('../src/poller.js');
+const { startPoller } = await import('../server/poller.js');
 
 // A source that counts its calls; `fail` lists call numbers that throw.
 function testSource({ fail = [], delayMs = 0 } = {}) {
