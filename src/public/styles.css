@@ -211,7 +211,6 @@ button[aria-pressed="true"] {
   transition: width 0.3s;
 }
 .gauge.low .gauge-fill { background: var(--warn); }
-.error { margin-top: 16px; color: var(--warn); }
 .history { margin-top: 32px; }
 .charts { display: grid; gap: 16px; margin-top: 16px; }
 /* Chart.js fills its parent, so the parent needs a fixed height. */

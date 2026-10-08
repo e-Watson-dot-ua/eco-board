@@ -25,7 +25,6 @@ const NARROW_SCREEN = window.matchMedia('(max-width: 600px)');
 const el = {
   status: document.getElementById('status'),
   refresh: document.getElementById('refresh'),
-  error: document.getElementById('error'),
   battery: document.getElementById('battery'),
   batteryLow: document.getElementById('battery-low'),
   batteryGauge: document.getElementById('battery-gauge'),
@@ -56,19 +55,20 @@ async function getJson(url) {
 }
 
 // The reasons of the current refresh. A Set keeps each reason once, so when the
-// latest reading and the history fail for the same reason, it is shown once.
+// latest reading and the history fail for the same reason, it is listed once.
+// The page shows them as a tooltip on the Offline pill, not as extra text.
 const errorReasons = new Set();
 
 function clearErrors() {
   errorReasons.clear();
-  el.error.hidden = true;
+  el.connection.removeAttribute('title');
 }
 
 function showError(reason) {
   // Server messages end with a period, which would clash with the "; " separator.
   errorReasons.add(reason.replace(/\.$/, ''));
-  el.error.textContent = `Could not load the data: ${[...errorReasons].join('; ')}`;
-  el.error.hidden = false;
+  el.connection.title = `Could not load the data: ${[...errorReasons].join('; ')}`;
+  showConnection('offline');
 }
 
 function formatAge(minutes) {
@@ -124,7 +124,6 @@ async function loadLatest() {
     return ts;
   } catch (err) {
     showError(err.message);
-    showConnection('offline');
     return null;
   }
 }
@@ -134,8 +133,11 @@ function staleAfterMs() {
 }
 
 function showConnection(state) {
-  el.connection.dataset.state = state;
-  el.connectionText.textContent = CONNECTION_LABELS[state];
+  // Requests finish in any order: an error in this refresh wins, even if
+  // another request succeeds after it.
+  const shown = errorReasons.size > 0 ? 'offline' : state;
+  el.connection.dataset.state = shown;
+  el.connectionText.textContent = CONNECTION_LABELS[shown];
 }
 
 // Charts
