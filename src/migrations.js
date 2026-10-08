@@ -1,6 +1,7 @@
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { pool } from './database.js';
+import { log } from './log.js';
 
 const migrationsDir = join(import.meta.dirname, '..', 'migrations');
 
@@ -31,7 +32,7 @@ export async function runMigrations() {
       await client.query(sql);
       await client.query('INSERT INTO schema_migrations (name) VALUES ($1)', [file]);
       await client.query('COMMIT');
-      console.log(`Applied migration ${file}`);
+      log.info(`Applied migration ${file}`);
     } catch (err) {
       await client.query('ROLLBACK');
       throw new Error(`Migration ${file} failed: ${err.message}`, { cause: err });

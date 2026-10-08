@@ -1,6 +1,7 @@
 import { join } from 'node:path';
 import express from 'express';
 import { getLatestReading, getReadingHistory } from './database.js';
+import { log } from './log.js';
 
 // Each range gets a bucket size that keeps the chart at roughly 170-290 points.
 const RANGES = {
@@ -9,8 +10,21 @@ const RANGES = {
   '30d': { period: '30 days', bucket: '4 hours' },
 };
 
+// Logs each request once its response is sent, e.g. "http GET /api/readings?range=7d 200 12ms".
+function logRequests(req, res, next) {
+  const start = performance.now();
+  res.on('finish', () => {
+    const ms = Math.round(performance.now() - start);
+    log.info(`http ${req.method} ${req.originalUrl} ${res.statusCode} ${ms}ms`);
+  });
+  next();
+}
+
 export function startServer({ port, deviceSn }) {
   const app = express();
+
+  // First, so that every request is logged, including static files.
+  app.use(logRequests);
 
   // The dashboard: src/public/index.html is served at http://localhost:PORT/
   app.use(express.static(join(import.meta.dirname, 'public')));

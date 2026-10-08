@@ -1,6 +1,7 @@
 import { connectWithRetry, pool } from './database.js';
 import { runMigrations } from './migrations.js';
 import { startServer } from './server.js';
+import { log } from './log.js';
 
 const port = Number(process.env.PORT) || 3000;
 // Until a real device is configured, show the data from npm run seed:fake.
@@ -13,11 +14,11 @@ async function shutdown(reason) {
   if (shuttingDown) return;
   shuttingDown = true;
 
-  console.log(`Shutting down (${reason})...`);
+  log.info(`Shutting down (${reason})...`);
   // Later: stop the poller here too, before the pool.
   if (server) await new Promise((resolve) => server.close(resolve));
   await pool.end();
-  console.log('Shutdown complete.');
+  log.info('Shutdown complete.');
 }
 
 // SIGINT = Ctrl+C in the terminal; SIGTERM = "please stop" from Docker/systemd.
@@ -27,4 +28,4 @@ process.on('SIGTERM', () => shutdown('SIGTERM'));
 await connectWithRetry();
 await runMigrations();
 server = await startServer({ port, deviceSn });
-console.log(`eco-board started: http://localhost:${port} (device ${deviceSn})`);
+log.info(`eco-board started: http://localhost:${port} (device ${deviceSn})`);
