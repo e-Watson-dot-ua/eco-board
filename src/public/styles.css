@@ -7,6 +7,9 @@
   --border: #e3e6eb;
   --warn: #b54708;
   --ok: #1a9e5f;
+  /* Button green: darker than --ok so white text keeps 4.5:1 contrast (4.98:1). */
+  --accent: #13804c;
+  --on-accent: #ffffff;
   /* Chart series colors (validated for color-blind safety on --card) */
   --series-1: #2a78d6;
   --series-2: #eb6834;
@@ -20,6 +23,9 @@
     --border: #2a313b;
     --warn: #f79009;
     --ok: #4cc38a;
+    /* In dark mode the bright green carries dark text (8.34:1). */
+    --accent: #4cc38a;
+    --on-accent: #111418;
     --series-1: #3987e5;
     --series-2: #d95926;
   }
@@ -131,7 +137,13 @@ button:disabled { opacity: 0.6; cursor: progress; }
 @media (prefers-reduced-motion: reduce) {
   #refresh:disabled .icon { animation: none; }
 }
-button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+/* Green buttons: the main action (Refresh) and the selected time range. */
+#refresh,
+button[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--on-accent);
+  border-color: var(--accent);
+}
 .ranges { display: flex; flex-wrap: wrap; gap: 8px; }
 .cards {
   display: grid;
