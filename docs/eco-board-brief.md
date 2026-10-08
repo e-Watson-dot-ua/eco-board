@@ -35,20 +35,20 @@ eco-board/
 │   ├── migrations.js            (applies migrations/ on startup)
 │   ├── server.js                (Express REST API, static server, request log)
 │   ├── env.js                   (validated settings from .env)
-│   ├── log.js                   (console logging with timestamps)
-│   └── public/
-│       ├── index.html           (dashboard UI)
-│       ├── styles.css
-│       ├── favicon.svg
-│       └── js/
-│           ├── app.js           (starts the dashboard modules)
-│           ├── api.js           (requests to the server, with a timeout)
-│           ├── config.js        (settings from /api/config)
-│           ├── format.js        (texts for ages and intervals)
-│           ├── header.js        (connection pill, status line, charging badge, footer)
-│           ├── cards.js         (status cards, battery gauge)
-│           ├── charts.js        (range buttons, Chart.js charts)
-│           └── refresh.js       (Refresh button, automatic refresh)
+│   └── log.js                   (console logging with timestamps)
+├── public/                      (the dashboard: everything the browser loads)
+│   ├── index.html
+│   ├── styles.css
+│   ├── favicon.svg
+│   └── js/
+│       ├── app.js               (starts the dashboard modules)
+│       ├── api.js               (requests to the server, with a timeout)
+│       ├── config.js            (settings from /api/config)
+│       ├── format.js            (texts for ages and intervals)
+│       ├── header.js            (connection pill, status line, charging badge, footer)
+│       ├── cards.js             (status cards, battery gauge)
+│       ├── charts.js            (range buttons, Chart.js charts)
+│       └── refresh.js           (Refresh button, automatic refresh)
 ├── scripts/
 │   ├── migrate.js               (npm run migrate)
 │   └── seed-fake.js             (npm run seed:fake)

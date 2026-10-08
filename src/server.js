@@ -26,8 +26,8 @@ export function startServer({ port, deviceSn, pollIntervalMs }) {
   // First, so that every request is logged, including static files.
   app.use(logRequests);
 
-  // The dashboard: src/public/index.html is served at http://localhost:PORT/
-  app.use(express.static(join(import.meta.dirname, 'public')));
+  // The dashboard: public/index.html is served at http://localhost:PORT/
+  app.use(express.static(join(import.meta.dirname, '..', 'public')));
   // Chart.js from node_modules, so the dashboard also works without internet.
   app.use(
     '/vendor/chart.js',
