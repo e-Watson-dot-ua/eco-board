@@ -73,6 +73,7 @@ replaces the old simulated data.
 | `npm start` | Start the app and the dashboard at http://localhost:3000 |
 | `npm run migrate` | Apply new database migrations without starting the app |
 | `npm run seed:fake` | Replace the simulated device's data with 30 fresh days |
+| `npm test` | Run the automated tests (no database needed) |
 
 ## License
 

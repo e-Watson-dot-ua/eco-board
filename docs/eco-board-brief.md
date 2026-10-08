@@ -52,6 +52,9 @@ eco-board/
 ├── scripts/
 │   ├── migrate.js               (npm run migrate)
 │   └── seed-fake.js             (npm run seed:fake)
+├── test/                        (npm test: node:test, no database needed)
+│   ├── *.test.js
+│   └── fake-page.js             (fake DOM, fetch and Chart.js for dashboard tests)
 ├── migrations/
 │   └── 001_init.sql
 ├── docs/

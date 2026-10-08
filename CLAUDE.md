@@ -22,6 +22,7 @@ docker compose down -v   # stop AND delete all data
 npm start                # start the app (src/main.js); runs migrations on startup
 npm run migrate          # apply new files from migrations/ (safe to run repeatedly)
 npm run seed:fake        # replace device FAKE-DEVICE with 30 days of simulated readings
+npm test                 # run the tests in test/ (no database needed)
 ```
 
 ## How it fits together
@@ -51,5 +52,8 @@ npm run seed:fake        # replace device FAKE-DEVICE with 30 days of simulated 
   cross-platform (no bash-only npm scripts, LF line endings via `.gitattributes`,
   named Docker volumes rather than bind mounts).
 - The repo is public: no secrets, tokens, or personal data in code or commits.
+- Tests use Node's built-in runner (`node:test`, `node:assert`) and live in
+  `test/*.test.js`. Run `npm test` after every change, and add or update a test
+  for changed behavior. Dashboard tests use the fake page in `test/fake-page.js`.
 - Comments are plain text: no pseudo-graphic decoration such as `// --- Charts ---`,
   `# ===`, or boxes drawn with symbols. A section header is just `// Charts`.
