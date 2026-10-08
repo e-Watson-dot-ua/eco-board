@@ -39,9 +39,9 @@ eco-board/
 │   └── public/
 │       ├── index.html           (dashboard UI)
 │       ├── styles.css
-│       ├── app.js               (starts the dashboard modules)
 │       ├── favicon.svg
 │       └── js/
+│           ├── app.js           (starts the dashboard modules)
 │           ├── api.js           (requests to the server, with a timeout)
 │           ├── config.js        (settings from /api/config)
 │           ├── format.js        (texts for ages and intervals)
