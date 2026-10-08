@@ -6,10 +6,12 @@ Full plan: [docs/eco-board-brief.md](docs/eco-board-brief.md).
 
 ## Stack
 
-- Node.js 22+ (developed on 24 LTS), **plain JavaScript, ES modules** — no TypeScript, no build step
+- Node.js 22+ (developed on 24 LTS), **plain JavaScript, ES modules** — no TypeScript
+- Server: no build step, runs the files in `src/` directly
 - Express.js for the API and static files
 - PostgreSQL 18 in Docker (`docker-compose.yml`), driver: `pg`
-- Frontend: single HTML page with Chart.js
+- Frontend: single HTML page; modules in `client/` bundled by esbuild into
+  `public/dist/app.js`; Chart.js stays a separate file (served from node_modules)
 
 ## Commands
 
@@ -19,7 +21,8 @@ docker compose ps        # check status (should be "healthy")
 docker compose down      # stop (data is kept in the pgdata volume)
 docker compose down -v   # stop AND delete all data
 
-npm start                # start the app (src/main.js); runs migrations on startup
+npm start                # build the dashboard, then start the app (src/main.js); runs migrations
+npm run build            # bundle client/ into public/dist/ (also runs before npm start)
 npm run migrate          # apply new files from migrations/ (safe to run repeatedly)
 npm run seed:fake        # replace device FAKE-DEVICE with 30 days of simulated readings
 npm test                 # run the tests in test/ (no database needed)
@@ -34,10 +37,14 @@ npm test                 # run the tests in test/ (no database needed)
   `readCurrent()`; today only `src/sources/fake-source.js` exists. The EcoFlow
   source will be a new file in `src/sources/` with the same shape.
 - `src/server.js` serves the JSON API and `public/` (the dashboard).
-- The dashboard is plain browser ES modules, no build step: `public/js/app.js`
-  only starts the other modules in `public/js/`, one file per part of the page
-  (header, cards, charts, refresh) plus small helpers (api, config, format).
-  Keep each module to one topic and export only what other modules need.
+- The dashboard source is browser ES modules in `client/`: `client/app.js` only
+  starts the other modules, one file per part of the page (header, cards, charts,
+  refresh) plus small helpers (api, config, format). Keep each module to one
+  topic and export only what other modules need.
+- `scripts/build.js` bundles `client/` into `public/dist/app.js` (minified, with a
+  source map). It uses esbuild's JavaScript API on purpose: a Windows group policy
+  blocks running `esbuild.exe` from the command line. `public/dist/` is not in Git.
+- `public/` holds only what the browser loads; never put source files there.
 
 ## Conventions
 

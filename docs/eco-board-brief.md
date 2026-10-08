@@ -13,7 +13,7 @@ A personal EcoFlow battery monitoring dashboard that reads real-time device data
 5. Handle errors gracefully (API failures, DB unavailable at startup, retries)
 
 ### Tech Stack
-- **Runtime:** Node.js (LTS) + plain JavaScript, ES modules (`"type": "module"` in package.json, no build step)
+- **Runtime:** Node.js (LTS) + plain JavaScript, ES modules (`"type": "module"` in package.json); no build step for the server, the dashboard is bundled with esbuild
 - **API Server:** Express.js
 - **Database:** PostgreSQL 18 in a container (Docker Compose; Podman-compatible)
 - **Frontend:** Chart.js or vanilla HTML5 canvas
@@ -36,20 +36,22 @@ eco-board/
 │   ├── server.js                (Express REST API, static server, request log)
 │   ├── env.js                   (validated settings from .env)
 │   └── log.js                   (console logging with timestamps)
-├── public/                      (the dashboard: everything the browser loads)
+├── client/                      (dashboard source: browser ES modules, bundled by esbuild)
+│   ├── app.js                   (starts the dashboard modules)
+│   ├── api.js                   (requests to the server, with a timeout)
+│   ├── config.js                (settings from /api/config)
+│   ├── format.js                (texts for ages and intervals)
+│   ├── header.js                (connection pill, status line, charging badge, footer)
+│   ├── cards.js                 (status cards, battery gauge)
+│   ├── charts.js                (range buttons, Chart.js charts)
+│   └── refresh.js               (Refresh button, automatic refresh)
+├── public/                      (everything the browser loads)
 │   ├── index.html
 │   ├── styles.css
 │   ├── favicon.svg
-│   └── js/
-│       ├── app.js               (starts the dashboard modules)
-│       ├── api.js               (requests to the server, with a timeout)
-│       ├── config.js            (settings from /api/config)
-│       ├── format.js            (texts for ages and intervals)
-│       ├── header.js            (connection pill, status line, charging badge, footer)
-│       ├── cards.js             (status cards, battery gauge)
-│       ├── charts.js            (range buttons, Chart.js charts)
-│       └── refresh.js           (Refresh button, automatic refresh)
+│   └── dist/                    (built by npm run build, not in Git)
 ├── scripts/
+│   ├── build.js                 (npm run build: esbuild bundle of client/)
 │   ├── migrate.js               (npm run migrate)
 │   └── seed-fake.js             (npm run seed:fake)
 ├── test/                        (npm test: node:test, no database needed)

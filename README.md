@@ -42,7 +42,7 @@ Works on Windows and Linux.
    docker compose up -d
    ```
 
-4. Start the app (it creates the database tables on first start):
+4. Start the app (it builds the dashboard and creates the database tables):
 
    ```sh
    npm start
@@ -70,7 +70,8 @@ replaces the old simulated data.
 | `docker compose up -d` | Start PostgreSQL in the background |
 | `docker compose ps` | Check that the database is running (`healthy`) |
 | `docker compose down` | Stop PostgreSQL (data is kept) |
-| `npm start` | Start the app and the dashboard at http://localhost:3000 |
+| `npm start` | Build the dashboard, then start the app at http://localhost:3000 |
+| `npm run build` | Build the dashboard only (`client/` → `public/dist/`) |
 | `npm run migrate` | Apply new database migrations without starting the app |
 | `npm run seed:fake` | Replace the simulated device's data with 30 fresh days |
 | `npm test` | Run the automated tests (no database needed) |
