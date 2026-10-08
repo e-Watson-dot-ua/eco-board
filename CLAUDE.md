@@ -24,6 +24,16 @@ npm run migrate          # apply new files from migrations/ (safe to run repeate
 npm run seed:fake        # replace device FAKE-DEVICE with 30 days of simulated readings
 ```
 
+## How it fits together
+
+- `src/main.js` starts everything in order (database, migrations, server, poller)
+  and stops it in reverse order on SIGINT/SIGTERM.
+- `src/poller.js` calls `source.readCurrent()` every `POLL_INTERVAL_MS` and saves
+  the result with `insertReading()`. A source is any object with `deviceSn` and
+  `readCurrent()`; today only `src/sources/fake-source.js` exists. The EcoFlow
+  source will be a new file in `src/sources/` with the same shape.
+- `src/server.js` serves the JSON API and `src/public/` (the dashboard).
+
 ## Conventions
 
 - ESM only: `import`/`export`, never `require()`. Relative imports include the

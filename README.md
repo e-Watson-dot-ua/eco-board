@@ -4,9 +4,9 @@ A personal dashboard for EcoFlow portable power stations. It reads battery
 data from the EcoFlow Developer API every few minutes, stores it in
 PostgreSQL, and shows charts of battery level, power, and temperature over time.
 
-> **Status:** early development. The dashboard works with simulated data;
-> reading a real device through the EcoFlow API is not built yet. See the
-> [project brief](docs/eco-board-brief.md) for the plan.
+> **Status:** early development. The dashboard and the polling work with a
+> simulated device; reading a real device through the EcoFlow API is not
+> built yet. See the [project brief](docs/eco-board-brief.md) for the plan.
 
 ## Requirements
 
@@ -59,8 +59,9 @@ npm run seed:fake
 ```
 
 While `ECOFLOW_DEVICE_SN` in `.env` is empty, the dashboard shows this
-simulated device (`FAKE-DEVICE`). Running the command again replaces the old
-simulated data.
+simulated device (`FAKE-DEVICE`), and the running app adds a new simulated
+reading every 5 minutes (`POLL_INTERVAL_MS`). Running the command again
+replaces the old simulated data.
 
 ## Commands
 

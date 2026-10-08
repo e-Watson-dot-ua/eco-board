@@ -26,15 +26,24 @@ A personal EcoFlow battery monitoring dashboard that reads real-time device data
 eco-board/
 ├── src/
 │   ├── main.js                  (entry point: startup order, graceful shutdown)
-│   ├── ecoflow-client.js        (API client, request signing)
+│   ├── poller.js                (reads a source at an interval, saves readings)
+│   ├── sources/
+│   │   ├── fake-source.js       (simulated device, used until the EcoFlow source exists)
+│   │   └── ecoflow-source.js    (planned: EcoFlow API, request signing)
+│   ├── fake-device.js           (battery simulation, shared with seed-fake)
 │   ├── database.js              (PostgreSQL pool, queries, connect-with-retry)
 │   ├── migrations.js            (applies migrations/ on startup)
-│   ├── poller.js                (background polling job, scheduler)
-│   ├── server.js                (Express REST API, static server)
+│   ├── server.js                (Express REST API, static server, request log)
+│   ├── env.js                   (validated settings from .env)
+│   ├── log.js                   (console logging with timestamps)
 │   └── public/
-│       └── index.html           (dashboard UI)
+│       ├── index.html           (dashboard UI)
+│       ├── styles.css
+│       ├── app.js               (status cards, Chart.js charts, auto-refresh)
+│       └── favicon.svg
 ├── scripts/
-│   └── migrate.js               (npm run migrate)
+│   ├── migrate.js               (npm run migrate)
+│   └── seed-fake.js             (npm run seed:fake)
 ├── migrations/
 │   └── 001_init.sql
 ├── docs/
