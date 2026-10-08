@@ -55,8 +55,18 @@ async function getJson(url) {
   return body;
 }
 
-function showError(message) {
-  el.error.textContent = message;
+// The reasons of the current refresh. A Set keeps each reason once, so when the
+// latest reading and the history fail for the same reason, it is shown once.
+const errorReasons = new Set();
+
+function clearErrors() {
+  errorReasons.clear();
+  el.error.hidden = true;
+}
+
+function showError(reason) {
+  errorReasons.add(reason);
+  el.error.textContent = `Could not load the data: ${[...errorReasons].join('; ')}`;
   el.error.hidden = false;
 }
 
@@ -112,7 +122,7 @@ async function loadLatest() {
     showConnection(Date.now() - ts > staleAfterMs() ? 'stale' : 'online');
     return ts;
   } catch (err) {
-    showError(`Could not load the latest reading: ${err.message}`);
+    showError(err.message);
     showConnection('offline');
     return null;
   }
@@ -232,7 +242,7 @@ async function loadHistory() {
     lastReadings = body.readings;
     renderCharts();
   } catch (err) {
-    showError(`Could not load the history: ${err.message}`);
+    showError(err.message);
   }
 }
 
@@ -284,7 +294,7 @@ function scheduleNextRefresh(latestTs) {
 
 async function refreshAll() {
   el.refresh.disabled = true;
-  el.error.hidden = true;
+  clearErrors();
   const [latestTs] = await Promise.all([loadLatest(), loadHistory()]);
   el.refresh.disabled = false;
   scheduleNextRefresh(latestTs);
