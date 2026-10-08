@@ -1,5 +1,7 @@
 // Data older than this is shown as a warning (the poller runs every 5 minutes).
 const STALE_AFTER_MIN = 15;
+// How often the page reloads its data by itself.
+const AUTO_REFRESH_MS = 60_000;
 // Same breakpoint as the @media rule in styles.css.
 const NARROW_SCREEN = window.matchMedia('(max-width: 600px)');
 
@@ -189,5 +191,14 @@ window.matchMedia('(prefers-color-scheme: dark)')
   .addEventListener('change', renderCharts);
 // ...and with the right number of time labels when the screen crosses 600 px.
 NARROW_SCREEN.addEventListener('change', renderCharts);
+
+// Reload the data every minute, but only while the tab is visible. When the tab
+// becomes visible again, reload right away instead of waiting for the next minute.
+setInterval(() => {
+  if (!document.hidden) refreshAll();
+}, AUTO_REFRESH_MS);
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) refreshAll();
+});
 
 refreshAll();
