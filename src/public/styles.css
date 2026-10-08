@@ -112,6 +112,17 @@ h3 { margin: 0 0 8px; font-size: 0.875rem; font-weight: 500; color: var(--muted)
   vector-effect: non-scaling-stroke;
   filter: drop-shadow(0 0 3px color-mix(in srgb, var(--ok) 60%, transparent));
 }
+.hero-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
 .sparkline figcaption {
   margin-top: 6px;
   color: var(--muted);

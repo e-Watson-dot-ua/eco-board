@@ -35,6 +35,8 @@ const el = {
   flowText: document.getElementById('flow-text'),
   connection: document.getElementById('connection'),
   connectionText: document.getElementById('connection-text'),
+  pollInfo: document.getElementById('poll-info'),
+  deviceSn: document.getElementById('device-sn'),
   sparkline: document.getElementById('sparkline'),
   sparklineLine: document.getElementById('sparkline-line'),
   powerIn: document.getElementById('power-in'),
@@ -108,8 +110,7 @@ async function loadLatest() {
 
     const ts = new Date(body.ts);
     const ageMin = Math.round((Date.now() - ts) / 60_000);
-    el.status.textContent =
-      `${body.deviceSn} · updated ${ts.toLocaleString()} (${formatAge(ageMin)})`;
+    el.status.textContent = `Updated ${ts.toLocaleString()} (${formatAge(ageMin)})`;
     showConnection(Date.now() - ts > staleAfterMs() ? 'stale' : 'online');
     return ts;
   } catch (err) {
@@ -283,10 +284,23 @@ let refreshTimer = null;
 
 async function loadConfig() {
   try {
-    ({ pollIntervalMs } = await getJson('/api/config'));
+    const config = await getJson('/api/config');
+    pollIntervalMs = config.pollIntervalMs;
+    el.deviceSn.textContent = config.deviceSn;
+    el.pollInfo.textContent = pollIntervalMs
+      ? `Polling every ${formatInterval(pollIntervalMs)}`
+      : 'Polling off';
   } catch {
     // Without the config, the page still works with the fallback refresh.
   }
+}
+
+// 10000 -> "10 s", 300000 -> "5 min", 3600000 -> "1 h"
+function formatInterval(ms) {
+  const seconds = Math.round(ms / 1000);
+  if (seconds < 60) return `${seconds} s`;
+  if (seconds < 3600) return `${Math.round(seconds / 60)} min`;
+  return `${Math.round(seconds / 3600)} h`;
 }
 
 // Next refresh: right after the poller should have saved its next reading,
