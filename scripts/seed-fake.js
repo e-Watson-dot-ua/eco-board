@@ -4,15 +4,10 @@
 // Remove the fake data with: DELETE FROM device_readings WHERE device_sn = 'FAKE-DEVICE';
 
 import { connectWithRetry, pool } from '../src/database.js';
+import { FAKE_DEVICE_SN as DEVICE_SN, simulateReading } from '../src/fake-device.js';
 
-const DEVICE_SN = 'FAKE-DEVICE';
 const DAYS = 30;
 const INTERVAL_MIN = 5;
-const CAPACITY_WH = 2048;
-
-function noise(amount) {
-  return (Math.random() - 0.5) * 2 * amount;
-}
 
 function generateReadings() {
   const count = (DAYS * 24 * 60) / INTERVAL_MIN;
@@ -23,26 +18,9 @@ function generateReadings() {
 
   for (let i = 1; i <= count; i++) {
     const ts = new Date(start + i * intervalMs);
-    const hour = ts.getHours() + ts.getMinutes() / 60;
-
-    // Solar-like charging between 06:00 and 18:00, strongest at noon.
-    const sun = Math.max(0, Math.sin((Math.PI * (hour - 6)) / 12));
-    let powerIn = Math.max(0, Math.round(sun * (300 + noise(30))));
-
-    // Household load: a small base load, more in the evening.
-    const eveningLoad = hour >= 18 && hour < 23 ? 100 : 0;
-    let powerOut = Math.max(0, Math.round(40 + eveningLoad + noise(10)));
-
-    // A full battery stops charging; an empty battery stops powering the load.
-    if (soc >= 100) powerIn = Math.min(powerIn, powerOut);
-    if (soc <= 5) powerOut = 0;
-
-    soc += (((powerIn - powerOut) * (INTERVAL_MIN / 60)) / CAPACITY_WH) * 100;
-    soc = Math.min(100, Math.max(0, soc));
-
-    const temperature = Number((22 + (powerIn + powerOut) * 0.02 + noise(0.5)).toFixed(1));
-
-    readings.push({ ts, batteryLevel: Math.round(soc), powerIn, powerOut, temperature });
+    const result = simulateReading(ts, soc, INTERVAL_MIN);
+    readings.push(result.reading);
+    soc = result.soc;
   }
   return readings;
 }
