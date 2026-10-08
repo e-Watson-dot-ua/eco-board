@@ -112,6 +112,9 @@ h3 { margin: 0 0 8px; font-size: 0.875rem; font-weight: 500; color: var(--muted)
   text-transform: uppercase;
 }
 button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font: inherit;
   padding: 8px 16px;
   border: 1px solid var(--border);
@@ -121,8 +124,15 @@ button {
   cursor: pointer;
 }
 button:disabled { opacity: 0.6; cursor: progress; }
+
+/* The Refresh icon spins while data is loading (the button is disabled then). */
+@keyframes spin { to { transform: rotate(360deg); } }
+#refresh:disabled .icon { animation: spin 0.8s linear infinite; }
+@media (prefers-reduced-motion: reduce) {
+  #refresh:disabled .icon { animation: none; }
+}
 button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
-.ranges { display: flex; gap: 8px; }
+.ranges { display: flex; flex-wrap: wrap; gap: 8px; }
 .cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
