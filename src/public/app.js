@@ -1,7 +1,11 @@
 // Data older than this is shown as a warning (the poller runs every 5 minutes).
 const STALE_AFTER_MIN = 15;
-// How often the page reloads its data by itself.
-const AUTO_REFRESH_MS = 60_000;
+// The page reloads its data shortly after the poller is expected to save a new
+// reading. If no reading is expected (polling off, or a poll is overdue), it
+// checks again after this fallback time.
+const FALLBACK_REFRESH_MS = 60_000;
+// Give the poller this much time to save the reading before asking for it.
+const AFTER_POLL_MARGIN_MS = 2_000;
 // Same breakpoint as the @media rule in styles.css.
 const NARROW_SCREEN = window.matchMedia('(max-width: 600px)');
 
@@ -53,8 +57,10 @@ async function loadLatest() {
     el.status.textContent =
       `${body.deviceSn} · updated ${ts.toLocaleString()} (${formatAge(ageMin)})`;
     el.status.classList.toggle('stale', ageMin > STALE_AFTER_MIN);
+    return ts;
   } catch (err) {
     showError(`Could not load the latest reading: ${err.message}`);
+    return null;
   }
 }
 
@@ -167,13 +173,45 @@ async function loadHistory() {
   }
 }
 
+// Refresh timing
+
+let pollIntervalMs = null; // from /api/config; null means polling is off
+let refreshTimer = null;
+
+async function loadConfig() {
+  try {
+    ({ pollIntervalMs } = await getJson('/api/config'));
+  } catch {
+    // Without the config, the page still works with the fallback refresh.
+  }
+}
+
+// Next refresh: right after the poller should have saved its next reading,
+// e.g. latest reading at 12:00:00 with a 5-minute interval -> refresh at 12:05:02.
+function scheduleNextRefresh(latestTs) {
+  clearTimeout(refreshTimer);
+
+  let delay = Math.min(FALLBACK_REFRESH_MS, pollIntervalMs ?? FALLBACK_REFRESH_MS);
+  if (pollIntervalMs && latestTs) {
+    const untilNextReading = latestTs.getTime() + pollIntervalMs + AFTER_POLL_MARGIN_MS - Date.now();
+    // Not positive: the reading is overdue (e.g. a poll failed), so keep the short delay.
+    if (untilNextReading > 0) delay = untilNextReading;
+  }
+
+  refreshTimer = setTimeout(() => {
+    // A hidden tab skips the refresh; becoming visible again triggers one.
+    if (!document.hidden) refreshAll();
+  }, delay);
+}
+
 // Event handlers and first load
 
 async function refreshAll() {
   el.refresh.disabled = true;
   el.error.hidden = true;
-  await Promise.all([loadLatest(), loadHistory()]);
+  const [latestTs] = await Promise.all([loadLatest(), loadHistory()]);
   el.refresh.disabled = false;
+  scheduleNextRefresh(latestTs);
 }
 
 el.refresh.addEventListener('click', refreshAll);
@@ -192,13 +230,10 @@ window.matchMedia('(prefers-color-scheme: dark)')
 // ...and with the right number of time labels when the screen crosses 600 px.
 NARROW_SCREEN.addEventListener('change', renderCharts);
 
-// Reload the data every minute, but only while the tab is visible. When the tab
-// becomes visible again, reload right away instead of waiting for the next minute.
-setInterval(() => {
-  if (!document.hidden) refreshAll();
-}, AUTO_REFRESH_MS);
+// When the tab becomes visible again, reload right away.
 document.addEventListener('visibilitychange', () => {
   if (!document.hidden) refreshAll();
 });
 
+await loadConfig();
 refreshAll();
