@@ -113,10 +113,16 @@ function showFlow(powerIn, powerOut) {
 // from the current time on every refresh, so it also counts up while offline.
 let lastReadingTs = null;
 
+// Online: just the time. Stale or Offline: the time plus the age, because then
+// the age is what matters ("Updated 14:02:30 (6 min ago)").
 function showStatusLine() {
   if (!lastReadingTs) return;
-  const ageSeconds = Math.max(0, Math.floor((Date.now() - lastReadingTs) / 1000));
-  el.status.textContent = `Updated ${lastReadingTs.toLocaleString()} (${formatAge(ageSeconds)})`;
+  let text = `Updated ${lastReadingTs.toLocaleString()}`;
+  if (el.connection.dataset.state !== 'online') {
+    const ageSeconds = Math.max(0, Math.floor((Date.now() - lastReadingTs) / 1000));
+    text += ` (${formatAge(ageSeconds)})`;
+  }
+  el.status.textContent = text;
 }
 
 async function loadLatest() {
@@ -131,8 +137,9 @@ async function loadLatest() {
 
     const ts = new Date(body.ts);
     lastReadingTs = ts;
-    showStatusLine();
+    // The pill first: the status line depends on its state.
     showConnection(Date.now() - ts > staleAfterMs() ? 'stale' : 'online');
+    showStatusLine();
     return ts;
   } catch (err) {
     showError(err.message);
