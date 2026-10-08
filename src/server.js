@@ -1,3 +1,4 @@
+import { join } from 'node:path';
 import express from 'express';
 import { getLatestReading, getReadingHistory } from './database.js';
 
@@ -10,6 +11,9 @@ const RANGES = {
 
 export function startServer({ port, deviceSn }) {
   const app = express();
+
+  // The dashboard: src/public/index.html is served at http://localhost:PORT/
+  app.use(express.static(join(import.meta.dirname, 'public')));
 
   app.get('/api/health', (req, res) => {
     res.json({ status: 'ok' });
