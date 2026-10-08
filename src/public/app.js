@@ -56,7 +56,7 @@ async function loadLatest() {
   }
 }
 
-// --- Charts ---
+// Charts
 
 function cssVar(name) {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -165,7 +165,7 @@ async function loadHistory() {
   }
 }
 
-// --- Wiring ---
+// Event handlers and first load
 
 async function refreshAll() {
   el.refresh.disabled = true;

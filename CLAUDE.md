@@ -37,3 +37,5 @@ npm run seed:fake        # replace device FAKE-DEVICE with 30 days of simulated 
   cross-platform (no bash-only npm scripts, LF line endings via `.gitattributes`,
   named Docker volumes rather than bind mounts).
 - The repo is public: no secrets, tokens, or personal data in code or commits.
+- Comments are plain text: no pseudo-graphic decoration such as `// --- Charts ---`,
+  `# ===`, or boxes drawn with symbols. A section header is just `// Charts`.
