@@ -1,20 +1,10 @@
 import { setTimeout as sleep } from 'node:timers/promises';
 import pg from 'pg';
+import { positiveIntFromEnv } from './env.js';
 import { log } from './log.js';
 
 if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL is not set. Copy .env.example to .env and fill it in.');
-}
-
-function positiveIntFromEnv(name, fallback) {
-  const raw = process.env[name];
-  if (raw === undefined || raw === '') return fallback;
-
-  const value = Number(raw);
-  if (!Number.isInteger(value) || value < 1) {
-    throw new Error(`${name} must be a positive integer, got "${raw}".`);
-  }
-  return value;
 }
 
 const connectAttempts = positiveIntFromEnv('DB_CONNECT_ATTEMPTS', 10);

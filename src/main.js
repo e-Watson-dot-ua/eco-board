@@ -1,13 +1,19 @@
 import { connectWithRetry, pool } from './database.js';
-import { runMigrations } from './migrations.js';
-import { startServer } from './server.js';
+import { positiveIntFromEnv } from './env.js';
+import { FAKE_DEVICE_SN } from './fake-device.js';
 import { log } from './log.js';
+import { runMigrations } from './migrations.js';
+import { startPoller } from './poller.js';
+import { startServer } from './server.js';
+import { createFakeSource } from './sources/fake-source.js';
 
 const port = Number(process.env.PORT) || 3000;
-// Until a real device is configured, show the data from npm run seed:fake.
-const deviceSn = process.env.ECOFLOW_DEVICE_SN || 'FAKE-DEVICE';
+const pollIntervalMs = positiveIntFromEnv('POLL_INTERVAL_MS', 5 * 60_000);
+// Until a real device is configured, use the simulated one.
+const deviceSn = process.env.ECOFLOW_DEVICE_SN || FAKE_DEVICE_SN;
 
 let server;
+let poller;
 let shuttingDown = false;
 
 async function shutdown(reason) {
@@ -15,7 +21,8 @@ async function shutdown(reason) {
   shuttingDown = true;
 
   log.info(`Shutting down (${reason})...`);
-  // Later: stop the poller here too, before the pool.
+  // Order matters: the poller and the server both use the database pool.
+  if (poller) await poller.stop();
   if (server) await new Promise((resolve) => server.close(resolve));
   await pool.end();
   log.info('Shutdown complete.');
@@ -29,3 +36,10 @@ await connectWithRetry();
 await runMigrations();
 server = await startServer({ port, deviceSn });
 log.info(`eco-board started: http://localhost:${port} (device ${deviceSn})`);
+
+if (deviceSn === FAKE_DEVICE_SN) {
+  poller = startPoller({ source: createFakeSource(), intervalMs: pollIntervalMs });
+  log.info(`Polling the simulated device every ${pollIntervalMs / 1000}s.`);
+} else {
+  log.warn(`Polling is off: reading ${deviceSn} from the EcoFlow API is not built yet.`);
+}
