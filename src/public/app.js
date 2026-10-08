@@ -275,12 +275,20 @@ function renderCharts() {
   ];
 }
 
+// Answers can arrive in a different order than the requests were sent, e.g. a
+// slow "24h" refresh after a quick click on "7 days". Only the newest request
+// may update the charts; older answers, and their errors, are ignored.
+let latestHistoryRequest = 0;
+
 async function loadHistory() {
+  const request = ++latestHistoryRequest;
   try {
     const body = await getJson(`/api/readings?range=${currentRange}`);
+    if (request !== latestHistoryRequest) return;
     lastReadings = body.readings;
     renderCharts();
   } catch (err) {
+    if (request !== latestHistoryRequest) return;
     showError(err.message);
   }
 }
