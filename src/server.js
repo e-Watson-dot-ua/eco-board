@@ -20,7 +20,7 @@ function logRequests(req, res, next) {
   next();
 }
 
-export function startServer({ port, deviceSn }) {
+export function startServer({ port, deviceSn, pollIntervalMs }) {
   const app = express();
 
   // First, so that every request is logged, including static files.
@@ -36,6 +36,11 @@ export function startServer({ port, deviceSn }) {
 
   app.get('/api/health', (req, res) => {
     res.json({ status: 'ok' });
+  });
+
+  // Settings the dashboard needs; pollIntervalMs is null when polling is off.
+  app.get('/api/config', (req, res) => {
+    res.json({ deviceSn, pollIntervalMs });
   });
 
   app.get('/api/readings/latest', async (req, res) => {

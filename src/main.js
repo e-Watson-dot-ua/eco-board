@@ -11,6 +11,8 @@ const port = Number(process.env.PORT) || 3000;
 const pollIntervalMs = positiveIntFromEnv('POLL_INTERVAL_MS', 5 * 60_000);
 // Until a real device is configured, use the simulated one.
 const deviceSn = process.env.ECOFLOW_DEVICE_SN || FAKE_DEVICE_SN;
+// Only the simulated device can be polled until the EcoFlow source exists.
+const pollingEnabled = deviceSn === FAKE_DEVICE_SN;
 
 let server;
 let poller;
@@ -34,10 +36,14 @@ process.on('SIGTERM', () => shutdown('SIGTERM'));
 
 await connectWithRetry();
 await runMigrations();
-server = await startServer({ port, deviceSn });
+server = await startServer({
+  port,
+  deviceSn,
+  pollIntervalMs: pollingEnabled ? pollIntervalMs : null,
+});
 log.info(`eco-board started: http://localhost:${port} (device ${deviceSn})`);
 
-if (deviceSn === FAKE_DEVICE_SN) {
+if (pollingEnabled) {
   poller = startPoller({ source: createFakeSource(), intervalMs: pollIntervalMs });
   log.info(`Polling the simulated device every ${pollIntervalMs / 1000}s.`);
 } else {
