@@ -6,6 +6,7 @@
   --muted: #667085;
   --border: #e3e6eb;
   --warn: #b54708;
+  --ok: #1a9e5f;
   /* Chart series colors (validated for color-blind safety on --card) */
   --series-1: #2a78d6;
   --series-2: #eb6834;
@@ -18,6 +19,7 @@
     --muted: #98a2b3;
     --border: #2a313b;
     --warn: #f79009;
+    --ok: #4cc38a;
     --series-1: #3987e5;
     --series-2: #d95926;
   }
@@ -92,6 +94,35 @@ button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-
   font-variant-numeric: tabular-nums;
 }
 .unit { margin-left: 4px; color: var(--muted); font-size: 1rem; font-weight: 400; }
+.low-label { margin-left: 8px; color: var(--warn); font-size: 0.875rem; font-weight: 600; }
+
+/* Battery gauge: an outline with a terminal on the right, filled to the level. */
+.gauge {
+  position: relative;
+  height: 14px;
+  margin: 10px 6px 0 0; /* the right margin leaves room for the terminal */
+  padding: 2px;
+  border: 2px solid var(--muted);
+  border-radius: 4px;
+}
+.gauge::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  right: -5px;
+  width: 3px;
+  height: 4px;
+  border-radius: 0 1px 1px 0;
+  background: var(--muted);
+}
+.gauge-fill {
+  width: 0;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--ok);
+  transition: width 0.3s;
+}
+.gauge.low .gauge-fill { background: var(--warn); }
 .error { margin-top: 16px; color: var(--warn); }
 .history { margin-top: 32px; }
 .charts { display: grid; gap: 16px; margin-top: 16px; }

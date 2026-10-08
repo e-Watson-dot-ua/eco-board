@@ -26,7 +26,14 @@
           </svg>
           Battery
         </div>
-        <div class="value"><span id="battery">–</span><span class="unit">%</span></div>
+        <div class="value">
+          <span id="battery">–</span><span class="unit">%</span>
+          <span class="low-label" id="battery-low" hidden>Low</span>
+        </div>
+        <div class="gauge" id="battery-gauge" role="meter" aria-label="Battery level"
+             aria-valuemin="0" aria-valuemax="100">
+          <div class="gauge-fill" id="battery-fill"></div>
+        </div>
       </div>
       <div class="card">
         <div class="label">

@@ -1,5 +1,7 @@
 // Data older than this is shown as a warning (the poller runs every 5 minutes).
 const STALE_AFTER_MIN = 15;
+// Below this level the battery gauge shows a warning.
+const LOW_BATTERY_PERCENT = 20;
 // The page reloads its data shortly after the poller is expected to save a new
 // reading. If no reading is expected (polling off, or a poll is overdue), it
 // checks again after this fallback time.
@@ -14,6 +16,9 @@ const el = {
   refresh: document.getElementById('refresh'),
   error: document.getElementById('error'),
   battery: document.getElementById('battery'),
+  batteryLow: document.getElementById('battery-low'),
+  batteryGauge: document.getElementById('battery-gauge'),
+  batteryFill: document.getElementById('battery-fill'),
   powerIn: document.getElementById('power-in'),
   powerOut: document.getElementById('power-out'),
   temperature: document.getElementById('temperature'),
@@ -44,10 +49,22 @@ function formatAge(minutes) {
   return `${Math.round(minutes / (24 * 60))} d ago`;
 }
 
+function showBatteryGauge(level) {
+  const percent = level ?? 0;
+  el.batteryFill.style.width = `${percent}%`;
+  el.batteryGauge.setAttribute('aria-valuenow', String(percent));
+
+  // Low battery: warning color plus a "Low" label, so it is never color alone.
+  const low = level != null && level < LOW_BATTERY_PERCENT;
+  el.batteryGauge.classList.toggle('low', low);
+  el.batteryLow.hidden = !low;
+}
+
 async function loadLatest() {
   try {
     const body = await getJson('/api/readings/latest');
     el.battery.textContent = body.batteryLevel ?? '–';
+    showBatteryGauge(body.batteryLevel);
     el.powerIn.textContent = body.powerIn ?? '–';
     el.powerOut.textContent = body.powerOut ?? '–';
     el.temperature.textContent = body.temperature ?? '–';
