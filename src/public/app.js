@@ -110,7 +110,7 @@ function showFlow(powerIn, powerOut) {
 }
 
 // The time of the newest reading on the page. The status line computes its age
-// from the current time, so it stays correct while offline and between refreshes.
+// from the current time on every refresh, so it also counts up while offline.
 let lastReadingTs = null;
 
 function showStatusLine() {
@@ -337,11 +337,6 @@ NARROW_SCREEN.addEventListener('change', renderCharts);
 document.addEventListener('visibilitychange', () => {
   if (!document.hidden) refreshAll();
 });
-
-// Between refreshes, keep the age in the status line up to date
-// ("just now" -> "12 s ago" -> "1 min ago" -> ...). Updating one text every
-// second is cheap, and the age starts counting the moment the data stops.
-setInterval(showStatusLine, 1000);
 
 await loadConfig();
 refreshAll();
