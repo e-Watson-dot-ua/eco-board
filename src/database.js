@@ -12,6 +12,11 @@ const connectDelayMs = positiveIntFromEnv('DB_CONNECT_DELAY_MS', 3000);
 
 export const pool = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
+  // pg waits forever by default. A database that hangs (instead of refusing)
+  // would then block requests, and the poller would stop: polls never overlap.
+  connectionTimeoutMillis: 5000,
+  // Checked in Node.js, so it also works when the database doesn't answer at all.
+  query_timeout: 10_000,
 });
 
 // Without this handler, an error on an idle connection (e.g. the database
