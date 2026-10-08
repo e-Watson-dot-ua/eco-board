@@ -33,7 +33,10 @@ pool.on('error', (err) => {
 // Runs a query and logs it by name, e.g. 'db history ["FAKE-DEVICE","1 hour","7 days"] 9ms, 168 rows'.
 async function query(name, text, params) {
   const start = performance.now();
-  const logPrefix = `db ${name} ${JSON.stringify(params)}`;
+  // Long parameters (e.g. a full EcoFlow response in raw) are shortened in the log.
+  const paramsText = JSON.stringify(params);
+  const shownParams = paramsText.length > 120 ? `${paramsText.slice(0, 117)}...` : paramsText;
+  const logPrefix = `db ${name} ${shownParams}`;
   try {
     const result = await pool.query(text, params);
     const ms = Math.round(performance.now() - start);
@@ -45,6 +48,24 @@ async function query(name, text, params) {
     log.error(`${logPrefix} failed after ${ms}ms: ${err.message || err.code}`);
     throw err;
   }
+}
+
+export async function insertReading(deviceSn, reading) {
+  await query(
+    'insert',
+    `INSERT INTO device_readings
+       (device_sn, ts, battery_level, power_in, power_out, temperature, raw)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+    [
+      deviceSn,
+      reading.ts,
+      reading.batteryLevel,
+      reading.powerIn,
+      reading.powerOut,
+      reading.temperature,
+      reading.raw,
+    ],
+  );
 }
 
 export async function getLatestReading(deviceSn) {
