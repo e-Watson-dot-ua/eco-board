@@ -1,16 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <style>
-    .outline { fill: none; stroke: #1d2330; }
-    .tip { fill: #1d2330; }
-    .level { fill: #1a9e5f; }
-    @media (prefers-color-scheme: dark) {
-      .outline { stroke: #e6e9ee; }
-      .tip { fill: #e6e9ee; }
-      .level { fill: #4cc38a; }
-    }
-  </style>
-  <!-- A battery, about 75 % charged: outline, terminal, charge level -->
-  <rect class="outline" x="2.25" y="8.25" width="23.5" height="15.5" rx="3" stroke-width="2.5" />
-  <rect class="tip" x="27" y="12.5" width="3" height="7" rx="1" />
-  <rect class="level" x="5.5" y="11.5" width="13" height="9" rx="1" />
+  <!-- The page logo, simplified for tab size: a solid green tile with a white pulse line.
+       A solid tile reads well on both light and dark browser tabs. -->
+  <rect width="32" height="32" rx="7" fill="#1a9e5f" />
+  <path d="M5 16h5l3-6 3.5 11 3-5h4.5" fill="none" stroke="#ffffff" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round" />
+  <circle cx="26.5" cy="16" r="1.75" fill="#ffffff" />
 </svg>
