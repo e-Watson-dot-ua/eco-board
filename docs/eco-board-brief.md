@@ -25,13 +25,16 @@ A personal EcoFlow battery monitoring dashboard that reads real-time device data
 ```
 eco-board/
 ├── src/
-│   ├── ecoflow-client.js       (API client, request signing)
+│   ├── main.js                  (entry point: startup order, graceful shutdown)
+│   ├── ecoflow-client.js        (API client, request signing)
 │   ├── database.js              (PostgreSQL pool, queries, connect-with-retry)
 │   ├── migrations.js            (applies migrations/ on startup)
 │   ├── poller.js                (background polling job, scheduler)
 │   ├── server.js                (Express REST API, static server)
 │   └── public/
 │       └── index.html           (dashboard UI)
+├── scripts/
+│   └── migrate.js               (npm run migrate)
 ├── migrations/
 │   └── 001_init.sql
 ├── docs/
@@ -39,6 +42,7 @@ eco-board/
 ├── .env.example
 ├── .gitattributes               (LF line endings across Windows/Linux)
 ├── .gitignore
+├── CLAUDE.md                    (instructions for Claude Code)
 ├── README.md
 ├── LICENSE (MIT)
 └── package.json
