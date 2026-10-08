@@ -13,7 +13,7 @@ function takeRequests() {
 
 describe('dashboard', () => {
   before(async () => {
-    await import('../public/js/app.js');
+    await import('../client/app.js');
     await settle();
   });
 

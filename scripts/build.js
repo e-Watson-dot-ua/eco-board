@@ -1,11 +1,11 @@
-// Bundles the dashboard modules (public/js/) into one minified file,
+// Bundles the dashboard modules (client/) into one minified file,
 // public/dist/app.js, with a source map for debugging in the browser.
 // Uses esbuild's JavaScript API rather than its command line: on some Windows
 // machines a group policy blocks running esbuild.exe directly.
 import * as esbuild from 'esbuild';
 
 const result = await esbuild.build({
-  entryPoints: ['public/js/app.js'],
+  entryPoints: ['client/app.js'],
   outfile: 'public/dist/app.js',
   bundle: true,
   minify: true,

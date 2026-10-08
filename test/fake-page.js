@@ -1,6 +1,6 @@
 // A fake browser page for testing the dashboard modules in Node.js: just enough
-// of the DOM, fetch() and Chart.js for public/js/ to run. Call installFakePage()
-// before importing public/js/app.js.
+// of the DOM, fetch() and Chart.js for the modules in client/ to run.
+// Call installFakePage() before importing client/app.js.
 
 function fakeElement(id) {
   const listeners = {};

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { formatAge, formatInterval } from '../public/js/format.js';
+import { formatAge, formatInterval } from '../client/format.js';
 
 describe('formatAge', () => {
   it('says "just now" for the first few seconds', () => {
