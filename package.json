@@ -8,7 +8,8 @@
   "scripts": {
     "start": "node --env-file=.env src/main.js",
     "migrate": "node --env-file=.env scripts/migrate.js",
-    "seed:fake": "node --env-file=.env scripts/seed-fake.js"
+    "seed:fake": "node --env-file=.env scripts/seed-fake.js",
+    "test": "node --test test/*.test.js"
   },
   "engines": {
     "node": ">=22"
