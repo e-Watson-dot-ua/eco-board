@@ -1,4 +1,5 @@
 import { getJson } from './js/api.js';
+import { showCards } from './js/cards.js';
 import { config, loadConfig } from './js/config.js';
 import { formatAge, formatInterval } from './js/format.js';
 
@@ -7,8 +8,6 @@ const STALE_AFTER_MISSED_POLLS = 3;
 // Used instead when the poll interval is unknown (e.g. polling is off).
 const STALE_AFTER_DEFAULT_MS = 15 * 60_000;
 const CONNECTION_LABELS = { online: 'Online', stale: 'Stale', offline: 'Offline' };
-// Below this level the battery gauge shows a warning.
-const LOW_BATTERY_PERCENT = 20;
 // Net power within this margin counts as idle, so small noise doesn't flip the state.
 const IDLE_WATTS = 5;
 // Charging state badge: label, icon (an SVG path) and tooltip per state.
@@ -41,10 +40,6 @@ const NARROW_SCREEN = window.matchMedia('(max-width: 600px)');
 const el = {
   status: document.getElementById('status'),
   refresh: document.getElementById('refresh'),
-  battery: document.getElementById('battery'),
-  batteryLow: document.getElementById('battery-low'),
-  batteryGauge: document.getElementById('battery-gauge'),
-  batteryFill: document.getElementById('battery-fill'),
   flow: document.getElementById('flow'),
   flowIcon: document.getElementById('flow-icon'),
   flowText: document.getElementById('flow-text'),
@@ -52,9 +47,6 @@ const el = {
   connectionText: document.getElementById('connection-text'),
   pollInfo: document.getElementById('poll-info'),
   deviceSn: document.getElementById('device-sn'),
-  powerIn: document.getElementById('power-in'),
-  powerOut: document.getElementById('power-out'),
-  temperature: document.getElementById('temperature'),
   rangeButtons: document.querySelectorAll('[data-range]'),
 };
 
@@ -77,18 +69,6 @@ function showError(reason) {
   errorReasons.add(reason.replace(/\.$/, ''));
   el.connection.title = `Could not load the data: ${[...errorReasons].join('; ')}`;
   showConnection('offline');
-}
-
-function showBatteryGauge(level) {
-  const percent = level ?? 0;
-  el.batteryFill.style.width = `${percent}%`;
-  el.batteryGauge.setAttribute('aria-valuenow', String(percent));
-
-  // Low battery: warning color plus a "Low" label, so it is never color alone.
-  const low = level != null && level < LOW_BATTERY_PERCENT;
-  el.batteryGauge.classList.toggle('low', low);
-  el.batteryLow.hidden = !low;
-  el.batteryLow.title = `Battery is below ${LOW_BATTERY_PERCENT} %`;
 }
 
 function showFlow(powerIn, powerOut) {
@@ -129,12 +109,8 @@ function showStatusLine() {
 async function loadLatest() {
   try {
     const body = await getJson('/api/readings/latest');
-    el.battery.textContent = body.batteryLevel ?? '–';
-    showBatteryGauge(body.batteryLevel);
+    showCards(body);
     showFlow(body.powerIn, body.powerOut);
-    el.powerIn.textContent = body.powerIn ?? '–';
-    el.powerOut.textContent = body.powerOut ?? '–';
-    el.temperature.textContent = body.temperature ?? '–';
 
     const ts = new Date(body.ts);
     lastReadingTs = ts;
