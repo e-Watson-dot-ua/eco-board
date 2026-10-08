@@ -29,6 +29,25 @@ pool.on('error', (err) => {
   console.error('PostgreSQL pool error:', err.message);
 });
 
+export async function getLatestReading(deviceSn) {
+  // temperature is numeric in Postgres, which pg returns as a string;
+  // ::float8 makes it a normal JavaScript number.
+  const { rows } = await pool.query(
+    `SELECT device_sn     AS "deviceSn",
+            ts,
+            battery_level AS "batteryLevel",
+            power_in      AS "powerIn",
+            power_out     AS "powerOut",
+            temperature::float8 AS temperature
+       FROM device_readings
+      WHERE device_sn = $1
+      ORDER BY ts DESC
+      LIMIT 1`,
+    [deviceSn],
+  );
+  return rows[0] ?? null;
+}
+
 export async function connectWithRetry({
   attempts = connectAttempts,
   delayMs = connectDelayMs,
