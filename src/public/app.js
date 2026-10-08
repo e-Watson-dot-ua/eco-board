@@ -65,7 +65,8 @@ function clearErrors() {
 }
 
 function showError(reason) {
-  errorReasons.add(reason);
+  // Server messages end with a period, which would clash with the "; " separator.
+  errorReasons.add(reason.replace(/\.$/, ''));
   el.error.textContent = `Could not load the data: ${[...errorReasons].join('; ')}`;
   el.error.hidden = false;
 }
