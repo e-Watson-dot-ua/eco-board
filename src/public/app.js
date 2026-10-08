@@ -7,11 +7,23 @@ const CONNECTION_LABELS = { online: 'Online', stale: 'Stale', offline: 'Offline'
 const LOW_BATTERY_PERCENT = 20;
 // Net power within this margin counts as idle, so small noise doesn't flip the state.
 const IDLE_WATTS = 5;
-// Charging state badge: label and icon (an SVG path) per state.
+// Charging state badge: label, icon (an SVG path) and tooltip per state.
 const FLOW_STATES = {
-  charging: { label: 'Charging', icon: 'M12 19V5M5 12l7-7 7 7' },
-  discharging: { label: 'Discharging', icon: 'M12 5v14M19 12l-7 7-7-7' },
-  idle: { label: 'Idle', icon: 'M5 12h14' },
+  charging: {
+    label: 'Charging',
+    icon: 'M12 19V5M5 12l7-7 7 7',
+    hint: 'More power comes in than goes out: the battery is filling up',
+  },
+  discharging: {
+    label: 'Discharging',
+    icon: 'M12 5v14M19 12l-7 7-7-7',
+    hint: 'More power goes out than comes in: the battery is running down',
+  },
+  idle: {
+    label: 'Idle',
+    icon: 'M5 12h14',
+    hint: `Power in and power out are within ${IDLE_WATTS} W of each other`,
+  },
 };
 // The page reloads its data shortly after the poller is expected to save a new
 // reading. If no reading is expected (polling off, or a poll is overdue), it
@@ -106,6 +118,7 @@ function showBatteryGauge(level) {
   const low = level != null && level < LOW_BATTERY_PERCENT;
   el.batteryGauge.classList.toggle('low', low);
   el.batteryLow.hidden = !low;
+  el.batteryLow.title = `Battery is below ${LOW_BATTERY_PERCENT} %`;
 }
 
 function showFlow(powerIn, powerOut) {
@@ -118,8 +131,9 @@ function showFlow(powerIn, powerOut) {
   if (net > IDLE_WATTS) state = 'charging';
   if (net < -IDLE_WATTS) state = 'discharging';
 
-  const { label, icon } = FLOW_STATES[state];
+  const { label, icon, hint } = FLOW_STATES[state];
   el.flowIcon.setAttribute('d', icon);
+  el.flow.title = hint;
   el.flowText.textContent =
     state === 'idle' ? label : `${label} ${net > 0 ? '+' : '−'}${Math.abs(net)} W`;
   el.flow.dataset.state = state;
@@ -174,6 +188,17 @@ function showConnection(state) {
   const shown = errorReasons.size > 0 ? 'offline' : state;
   el.connection.dataset.state = shown;
   el.connectionText.textContent = CONNECTION_LABELS[shown];
+  // Offline keeps its tooltip from showError(): the reason of the failure.
+  if (shown !== 'offline') el.connection.title = connectionHint(shown);
+}
+
+function connectionHint(state) {
+  const every = pollIntervalMs ? ` (every ${formatInterval(pollIntervalMs)})` : '';
+  if (state === 'online') return `New readings arrive on time${every}`;
+  return pollIntervalMs
+    ? `No new reading for ${STALE_AFTER_MISSED_POLLS} polls in a row (one is expected ` +
+        `every ${formatInterval(pollIntervalMs)})`
+    : `No new reading for ${STALE_AFTER_DEFAULT_MS / 60_000} minutes`;
 }
 
 // Charts
