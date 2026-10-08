@@ -4,7 +4,8 @@ import { log } from './log.js';
 // Every `intervalMs`, reads the current values from `source` and saves them.
 // A failed poll is logged, and the next poll runs as usual. Polls never overlap:
 // the next one is scheduled only after the previous one has finished.
-export function startPoller({ source, intervalMs }) {
+// `save` is the database by default; tests pass a function that collects readings.
+export function startPoller({ source, intervalMs, save = insertReading }) {
   let timer = null;
   let running = null; // the poll in progress, if any
   let stopped = false;
@@ -13,7 +14,7 @@ export function startPoller({ source, intervalMs }) {
     const start = performance.now();
     try {
       const r = await source.readCurrent();
-      await insertReading(source.deviceSn, r);
+      await save(source.deviceSn, r);
       const ms = Math.round(performance.now() - start);
       log.info(
         `poll ${source.deviceSn} saved: ${r.batteryLevel} %, ${r.powerIn} W in, ` +
